@@ -18,7 +18,7 @@ SITE_PATH = "/quiz/"
 # 비워 두면 학생 화면에 "준비하고 있어요"가 뜨고 '내용 복사'만 된다.
 FEEDBACK_ENDPOINT = ""
 
-MODULES = ["q_korean", "q_korean2", "q_korean3", "q_korean4", "q_english", "q_english2", "q_english3", "q_math", "q_math2", "q_math3", "q_history", "q_history2", "q_history3", "q_society", "q_society2", "q_society3", "q_science", "q_science2", "q_science3"]
+MODULES = ["q_korean", "q_korean2", "q_korean3", "q_korean4", "q_english", "q_english2", "q_english3", "q_english4", "q_math", "q_math2", "q_math3", "q_history", "q_history2", "q_history3", "q_society", "q_society2", "q_society3", "q_science", "q_science2", "q_science3"]
 
 
 def load():
@@ -53,7 +53,7 @@ def load():
 
 
 CIRCLED = "①②③④⑤"
-ORDERED = re.compile(r"^\s*(\(가\)|\(나\)|ㄱ|ㄴ|ㄷ|[①②③④⑤])")
+ORDERED = re.compile(r"^\s*(\(가\)|\(나\)|\(A\)|ㄱ|ㄴ|ㄷ|[①②③④⑤㉠㉡㉢㉣㉤])")
 
 
 def as_int(c):
@@ -76,7 +76,7 @@ def rebalance(bank):
     movable = []
     for q in bank:
         nums = [as_int(c) for c in q["c"]]
-        fixed_text = any(ORDERED.match(c) for c in q["c"]) or any(ch in q["e"] for ch in CIRCLED)
+        fixed_text = any(ORDERED.match(c) and " - (B)" not in c for c in q["c"]) or any(ch in q["e"] for ch in CIRCLED)
         leads = [lead_num(c) for c in q["c"]]
         if all(n is None for n in nums) or not all(n is not None for n in nums):
             # 단위가 붙은 수(20 m/s, 1592년 등)가 작은 것부터 나열된 선택지는 순서를 유지한다.
