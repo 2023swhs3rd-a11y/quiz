@@ -18,17 +18,21 @@ def table(head, rows, caption=""):
 class Plot:
     """좌표평면 그림. 수학 좌표(x, y)를 받아 SVG 좌표로 바꾼다."""
 
-    def __init__(self, xmin, xmax, ymin, ymax, w=280, h=230, pad=22, axes=True, xlabel="x", ylabel="y", origin=True, equal=False):
+    def __init__(self, xmin, xmax, ymin, ymax, w=280, h=230, pad=22, axes=True, xlabel="x", ylabel="y", origin=True, equal=False, yaxis_at=None):
         if equal:  # 가로·세로 눈금 간격을 같게(원이 찌그러지지 않게)
             h = round((ymax - ymin) / (xmax - xmin) * (w - 2 * pad) + 2 * pad)
         self.xmin, self.xmax, self.ymin, self.ymax = xmin, xmax, ymin, ymax
         self.w, self.h, self.pad = w, h, pad
         self.parts = []
         if axes:
-            x0, y0 = self.X(max(min(0, xmax), xmin)), self.Y(max(min(0, ymax), ymin))
+            x0 = self.X(max(min(0, xmax), xmin) if yaxis_at is None else yaxis_at)
+            y0 = self.Y(max(min(0, ymax), ymin))
             self.parts.append(f"<line x1='{pad - 6}' y1='{_num(y0)}' x2='{w - pad + 8}' y2='{_num(y0)}' stroke='currentColor' stroke-width='1.2' marker-end='url(#ar)'/>")
             self.parts.append(f"<line x1='{_num(x0)}' y1='{h - pad + 6}' x2='{_num(x0)}' y2='{pad - 8}' stroke='currentColor' stroke-width='1.2' marker-end='url(#ar)'/>")
-            self.text(xmax, 0, xlabel, dx=10, dy=4, raw=True)
+            if len(xlabel) <= 1:
+                self.parts.append(f"<text x='{w - pad + 10}' y='{_num(y0 + 4)}' font-size='13' font-style='italic' fill='currentColor'>{xlabel}</text>")
+            else:  # 긴 축 이름은 화살표 위에 오른쪽 맞춤
+                self.parts.append(f"<text x='{w - pad + 8}' y='{_num(y0 - 8)}' font-size='12' text-anchor='end' fill='currentColor'>{xlabel}</text>")
             self.parts.append(f"<text x='{_num(x0 + 6)}' y='{pad - 6}' font-size='13' font-style='italic' fill='currentColor'>{ylabel}</text>")
             if origin and xmin <= 0 <= xmax and ymin <= 0 <= ymax:
                 self.parts.append(f"<text x='{_num(x0 - 13)}' y='{_num(y0 + 14)}' font-size='12' fill='currentColor'>O</text>")
