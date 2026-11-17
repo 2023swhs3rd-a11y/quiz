@@ -18,7 +18,7 @@ SITE_PATH = "/quiz/"
 # 비워 두면 학생 화면에 "준비하고 있어요"가 뜨고 '내용 복사'만 된다.
 FEEDBACK_ENDPOINT = ""
 
-MODULES = ["q_korean", "q_korean2", "q_english", "q_english2", "q_math", "q_math2", "q_history", "q_history2", "q_society", "q_society2", "q_science", "q_science2"]
+MODULES = ["q_korean", "q_korean2", "q_korean3", "q_english", "q_english2", "q_english3", "q_math", "q_math2", "q_math3", "q_history", "q_history2", "q_history3", "q_society", "q_society2", "q_society3", "q_science", "q_science2", "q_science3"]
 
 
 def load():
@@ -51,6 +51,11 @@ def as_int(c):
     return int(c) if re.fullmatch(r"-?\d+", c) else None
 
 
+def lead_num(c):
+    m = re.match(r"\s*(?:약 )?(-?\d[\d,]*(?:\.\d+)?)", c.replace("−", "-"))
+    return float(m.group(1).replace(",", "")) if m else None
+
+
 def rebalance(bank):
     """정답 번호가 한쪽에 몰리지 않도록 선택지 배치를 조정한다.
     - 순서가 의미 있는 선택지(①~⑤ 지시, ㄱㄴㄷ 조합, (가)(나) 순서, 해설이 번호를 언급)는 그대로 둔다.
@@ -62,6 +67,11 @@ def rebalance(bank):
     for q in bank:
         nums = [as_int(c) for c in q["c"]]
         fixed_text = any(ORDERED.match(c) for c in q["c"]) or any(ch in q["e"] for ch in CIRCLED)
+        leads = [lead_num(c) for c in q["c"]]
+        if all(n is None for n in nums) or not all(n is not None for n in nums):
+            # 단위가 붙은 수(20 m/s, 1592년 등)가 작은 것부터 나열된 선택지는 순서를 유지한다.
+            if all(x is not None for x in leads) and all(leads[i] < leads[i + 1] for i in range(4)):
+                fixed_text = True
         if all(n is not None for n in nums):
             d = nums[1] - nums[0]
             if d > 0 and all(nums[i + 1] - nums[i] == d for i in range(4)):
@@ -106,15 +116,14 @@ def main():
     print("  정답 번호 분포:", dict(sorted(collections.Counter(q["a"] for q in bank).items())))
     for s in dict.fromkeys(q["s"] for q in bank):
         print(f"    {s}:", dict(sorted(collections.Counter(q["a"] for q in bank if q["s"] == s).items())))
-    cells = collections.Counter((q["t"], q["g"], q["d"]) for q in bank)
-    print("  유형·학년·난이도별 문항 수(칸마다 20문항 이상이어야 함):")
+    cells = collections.Counter((q["s"], q["g"], q["d"]) for q in bank)
+    print("  과목·학년·난이도별 문항 수(칸마다 20문항 이상이어야 함):")
     short = []
-    for t in ("단편", "수능"):
-        for g in (1, 2, 3):
-            print(f"    {t} 고{g}:", "  ".join(f"{d} {cells[(t, g, d)]}" for d in "하중상"))
-            short += [f"{t} 고{g} {d}: {cells[(t, g, d)]}" for d in "하중상" if cells[(t, g, d)] < 20]
+    for s in dict.fromkeys(q["s"] for q in bank):
+        print(f"    {s}:", " | ".join(f"고{g} " + " ".join(f"{d}{cells[(s, g, d)]}" for d in "하중상") for g in (1, 2, 3)))
+        short += [f"{s} 고{g} {d}: {cells[(s, g, d)]}" for g in (1, 2, 3) for d in "하중상" if cells[(s, g, d)] < 20]
     if short:
-        print("  !! 20문항 미만:", ", ".join(short))
+        print(f"  !! 20문항 미만 {len(short)}칸:", ", ".join(short))
     print("  난이도:", dict(collections.Counter(q["d"] for q in bank)), " 학년:", dict(sorted(collections.Counter(q["g"] for q in bank).items())))
 
     data = json.dumps(bank, ensure_ascii=False)
