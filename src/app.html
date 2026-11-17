@@ -1,0 +1,428 @@
+<title>주요과목 문제은행</title>
+<!--HEAD-EXTRA-->
+<!--SITE-CSS-->
+<style>
+/* 봉일천고 진로진학부 공통 스타일(/assets/site.css)의 --bon-* 값을 그대로 쓴다. 이 사이트 고유색만 여기서 정한다. */
+:root {
+  --accent: #a16207; --on-accent: #ffffff;
+  --ok: #15803d; --bad: #b91c1c;
+  --bon-accent: var(--accent);
+  --bg: var(--bon-bg); --card: var(--bon-card); --soft: var(--bon-soft); --text: var(--bon-text);
+  --body: var(--bon-body); --muted: var(--bon-muted); --line: var(--bon-line);
+  --radius: var(--bon-radius); --shadow: var(--bon-shadow);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --accent: #facc15; --on-accent: #1c1917; --ok: #4ade80; --bad: #f87171; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --accent: #facc15; --on-accent: #1c1917; --ok: #4ade80; --bad: #f87171; color-scheme: dark; }
+
+body { background: var(--bg); color: var(--body); }
+h1, h2, h3 { color: var(--text); text-wrap: balance; }
+.bon-bar { --bon-max: 860px; }
+.bon-bar-in, .wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 860px; margin: 0 auto; }
+.stack { display: grid; gap: 22px; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* 머리 */
+.stats { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 14px 0 0; padding: 0; list-style: none; font-size: .92rem; color: var(--muted); }
+.stats b { color: var(--text); font-weight: 800; font-size: 1.05rem; font-variant-numeric: tabular-nums; margin-right: 3px; }
+.stats li:first-child b { color: var(--accent); }
+
+/* 설정 화면 */
+.panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px; display: grid; gap: 18px; min-width: 0; }
+.group { display: grid; gap: 8px; min-width: 0; }
+.lbl { font-size: .82rem; font-weight: 600; color: var(--muted); }
+.lbl small { font-weight: 400; }
+.types { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.type-card { all: unset; box-sizing: border-box; cursor: pointer; display: grid; gap: 2px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); transition: border-color .18s ease, background .18s ease; }
+.type-card strong { color: var(--text); font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em; }
+.type-card span { color: var(--muted); font-size: .88rem; }
+.type-card .n { color: var(--accent); font-weight: 700; font-size: .82rem; font-variant-numeric: tabular-nums; }
+.type-card:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.type-card[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--card)); box-shadow: inset 0 0 0 1px var(--accent); }
+.type-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line); background: var(--card); color: var(--text); border-radius: 999px; padding: 5px 13px; font-size: .9rem; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.chip small { font-size: .75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.chip[aria-pressed="true"] { background: var(--text); border-color: var(--text); color: var(--bg); }
+.chip[aria-pressed="true"] small { color: inherit; opacity: .7; }
+.row3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.startbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 16px; }
+.count { font-variant-numeric: tabular-nums; }
+.count b { color: var(--accent); font-size: 1.15rem; font-weight: 800; }
+.btn { border: 0; border-radius: 10px; padding: 10px 20px; font-weight: 700; background: var(--accent); color: var(--on-accent); }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+.btn.ghost { background: var(--card); color: var(--text); border: 1px solid var(--line); font-weight: 600; }
+.actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+
+/* 문제 화면 */
+.qhead { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-top: 22px; }
+.tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.lv-상 { --bon-accent: var(--bad); }
+.lv-하 { --bon-accent: var(--ok); }
+.progress { font-variant-numeric: tabular-nums; color: var(--muted); font-size: .9rem; font-weight: 600; }
+.meter { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--accent); transition: width .25s ease; }
+.passage { background: var(--soft); border-radius: 12px; padding: 16px 18px; white-space: pre-line; line-height: 1.85; color: var(--text); }
+.passage .src { display: block; text-align: right; color: var(--muted); font-size: .85rem; }
+.qtext { font-size: 1.08rem; font-weight: 600; color: var(--text); white-space: pre-line; min-width: 0; }
+.qtext .num { color: var(--accent); font-weight: 800; margin-right: 6px; font-variant-numeric: tabular-nums; }
+.box { border: 1px solid var(--line); border-radius: 10px; background: var(--card); padding: 10px 14px; margin: 8px 0 4px; font-weight: 400; font-size: .97rem; line-height: 1.75; white-space: normal; color: var(--body); }
+.passage .box { margin: 0 0 10px; }
+.fr { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; font-size: .82em; line-height: 1.15; margin: 0 2px; }
+.fr span:first-child { border-bottom: 1px solid currentColor; padding: 0 2px; }
+.choices { display: grid; gap: 8px; }
+.choice { display: flex; align-items: flex-start; gap: 12px; text-align: left; width: 100%; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; min-width: 0; color: var(--text); transition: border-color .18s ease, background .18s ease; }
+.choice:hover:not(:disabled) { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.choice .bub { flex: none; width: 28px; height: 28px; border: 1px solid var(--line); border-radius: 50%; display: grid; place-items: center; color: var(--muted); font-size: .85rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.choice .txt { padding-top: 1px; min-width: 0; }
+.choice[aria-checked="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--card)); }
+.choice[aria-checked="true"] .bub { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.choice.correct { border-color: var(--ok); box-shadow: inset 0 0 0 1px var(--ok); background: color-mix(in srgb, var(--ok) 12%, var(--card)); }
+.choice.correct .bub { background: var(--ok); border-color: var(--ok); color: var(--card); }
+.choice.wrong { border-color: var(--bad); box-shadow: inset 0 0 0 1px var(--bad); background: color-mix(in srgb, var(--bad) 10%, var(--card)); }
+.choice.wrong .bub { background: var(--bad); border-color: var(--bad); color: var(--card); }
+.choice:disabled { cursor: default; }
+.explain { border-top: 1px solid var(--line); padding-top: 16px; display: grid; gap: 6px; }
+.verdict { font-weight: 800; font-size: 1.05rem; }
+.verdict.ok { color: var(--ok); } .verdict.bad { color: var(--bad); }
+.explain p { margin: 0; }
+
+body.in-quiz .bon-header { display: none; }
+
+/* '이 문제 이상해요' 제보 */
+.report-open { all: unset; cursor: pointer; margin-right: auto; align-self: center; font-size: .86rem; color: var(--muted); border-bottom: 1px dashed currentColor; }
+.report-open:hover { color: var(--text); }
+.report-open:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.report { background: var(--soft); border-radius: 12px; padding: 14px 16px; display: grid; gap: 10px; }
+.report strong { color: var(--text); }
+.report p { margin: 0; font-size: .86rem; color: var(--muted); }
+.report textarea { width: 100%; min-height: 72px; resize: vertical; padding: 8px 12px; font: inherit; font-size: .95rem; border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--text); }
+.report textarea:focus { outline: 2px solid var(--accent); border-color: transparent; }
+.report .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.report .status { min-height: 1.4em; color: var(--ok); font-weight: 600; }
+.report .status.err { color: var(--bad); }
+
+/* 결과 화면 */
+.score { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; padding-top: 26px; }
+.score .big { font-size: 3rem; font-weight: 800; letter-spacing: -0.035em; color: var(--accent); font-variant-numeric: tabular-nums; line-height: 1; }
+.score .sub { color: var(--muted); }
+.brow { display: grid; grid-template-columns: 6.5em 1fr 4em; gap: 10px; align-items: center; font-variant-numeric: tabular-nums; }
+.brow .track { height: 10px; background: var(--soft); border-radius: 5px; overflow: hidden; }
+.brow .track i { display: block; height: 100%; background: var(--ok); border-radius: 5px; }
+.brow span:last-child { text-align: right; color: var(--muted); font-size: .9rem; }
+.review { display: grid; gap: 10px; }
+.review details { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
+.review summary { cursor: pointer; font-weight: 600; color: var(--text); }
+.review .ans { margin: 8px 0 0; color: var(--muted); font-size: .95rem; }
+.review .passage { margin-top: 10px; }
+
+@media (max-width: 640px) {
+  .types { grid-template-columns: minmax(0, 1fr); }
+  .row3 { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .panel { padding: 16px 14px; }
+  .brow { grid-template-columns: 5.5em 1fr 3.5em; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+<!--HEAD-END-->
+<nav class="bon-bar" aria-label="진로진학부 사이트"><div class="bon-bar-in">
+  <a href="/">봉일천고등학교 진로진학부</a><span aria-current="page">주요과목 문제은행</span>
+</div></nav>
+<div class="wrap">
+  <header class="bon-header">
+    <h1 class="bon-title">주요과목 문제은행</h1>
+    <p class="bon-lead">국어·영어·수학·한국사·통합사회·통합과학을 5지 선다 문제로 풀어 보고, 정답과 해설을 바로 확인하세요.</p>
+    <ul class="stats" id="stats"></ul>
+  </header>
+  <main id="app"></main>
+  <footer class="bon-footer">
+    <p class="bon-footer-info">모든 문항은 학습용으로 새로 만든 창작 문항입니다. 오답 노트와 선택한 조건은 이 기기의 브라우저에만 저장됩니다.</p>
+    <p>© 봉일천고등학교 진로진학부</p>
+    <p>마지막 정리: __DATE__</p>
+  </footer>
+</div>
+
+<script>
+const BANK = /*__BANK__*/[];
+const SUBJECTS = ["국어", "영어", "수학", "한국사", "통합사회", "통합과학"];
+const TYPES = { "단편": { name: "단편지식형", desc: "개념·용어·공식을 빠르게 확인" }, "수능": { name: "수능형", desc: "지문·자료를 읽고 분석·추론" } };
+const NUMS = ["①", "②", "③", "④", "⑤"];
+const REPORT_REASONS = ["정답이 틀린 것 같아요", "해설이 이상해요", "문제·선택지에 오타가 있어요", "기타"];
+const app = document.getElementById("app");
+
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+
+const state = {
+  type: "단편",
+  subjects: new Set(SUBJECTS),
+  grades: new Set([1, 2, 3]),
+  levels: new Set(["하", "중", "상"]),
+  size: 10,
+  ...(() => { const s = store.get("quiz-filters", null); if (!s) return {}; return {
+    type: s.type in TYPES ? s.type : "단편",
+    subjects: new Set((s.subjects || SUBJECTS).filter(x => SUBJECTS.includes(x))),
+    grades: new Set(s.grades || [1, 2, 3]), levels: new Set(s.levels || ["하", "중", "상"]), size: s.size || 10 }; })()
+};
+let quiz = null;
+
+function saveFilters() {
+  store.set("quiz-filters", { type: state.type, subjects: [...state.subjects], grades: [...state.grades], levels: [...state.levels], size: state.size });
+}
+function pool() {
+  return BANK.filter(q => q.t === state.type && state.subjects.has(q.s) && state.grades.has(q.g) && state.levels.has(q.d));
+}
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function el(html) { const t = document.createElement("template"); t.innerHTML = html.trim(); return t.content; }
+function wrongList() { return store.get("quiz-wrong", []).filter(id => BANK.some(q => q.id === id)); }
+
+/* ---------- 설정 화면 ---------- */
+function renderHome() {
+  quiz = null;
+  document.body.classList.remove("in-quiz");
+  document.getElementById("stats").innerHTML = `<li><b>${BANK.length}</b>문항</li><li><b>${SUBJECTS.length}</b>과목</li><li><b>5</b>지 선다</li><li>정답·해설 제공</li>`;
+  const countBy = (pred) => BANK.filter(pred).length;
+  const p = pool();
+  const wrong = wrongList();
+  app.innerHTML = "";
+  app.append(el(`
+  <section class="stack" style="padding-top:18px">
+   <div class="panel">
+    <div class="group">
+      <div class="lbl">1. 문제 유형</div>
+      <div class="types">
+        ${Object.entries(TYPES).map(([k, v]) => `
+          <button class="type-card" data-type="${k}" aria-pressed="${state.type === k}">
+            <strong>${v.name}</strong><span>${v.desc}</span>
+            <span class="n">${countBy(q => q.t === k)}문항</span>
+          </button>`).join("")}
+      </div>
+    </div>
+    <div class="group">
+      <div class="lbl">2. 과목 <small>(여러 개 선택 가능)</small></div>
+      <div class="chips">
+        ${SUBJECTS.map(s => `<button class="chip" data-subj="${s}" aria-pressed="${state.subjects.has(s)}">${s}<small>${countBy(q => q.s === s && q.t === state.type)}</small></button>`).join("")}
+      </div>
+    </div>
+    <div class="row3">
+      <div class="group">
+        <div class="lbl">3. 학년</div>
+        <div class="chips">${[1, 2, 3].map(g => `<button class="chip" data-grade="${g}" aria-pressed="${state.grades.has(g)}">고${g}</button>`).join("")}</div>
+      </div>
+      <div class="group">
+        <div class="lbl">4. 난이도</div>
+        <div class="chips">${["하", "중", "상"].map(d => `<button class="chip" data-level="${d}" aria-pressed="${state.levels.has(d)}">${d}</button>`).join("")}</div>
+      </div>
+      <div class="group">
+        <div class="lbl">5. 문항 수</div>
+        <div class="chips">${[5, 10, 20, 0].map(n => `<button class="chip" data-size="${n}" aria-pressed="${state.size === n}">${n || "전체"}</button>`).join("")}</div>
+      </div>
+    </div>
+    <div class="startbar">
+      <div class="count">조건에 맞는 문항 <b>${p.length}</b>개 중 <b>${state.size ? Math.min(state.size, p.length) : p.length}</b>문항 출제</div>
+      <button class="btn" id="start" ${p.length ? "" : "disabled"}>풀기 시작</button>
+    </div>
+    ${p.length ? "" : `<p class="bon-note" style="margin:0">선택한 조건에 맞는 문항이 없습니다. 과목·학년·난이도 선택을 넓혀 보세요.</p>`}
+   </div>
+    ${wrong.length ? `<div class="panel"><div class="startbar" style="border:0;padding:0"><div class="count"><b>오답 노트</b> 틀린 문제 ${wrong.length}개가 모여 있습니다.</div>
+      <div class="actions"><button class="btn ghost" id="clear-wrong">비우기</button><button class="btn ghost" id="retry-wrong">오답만 다시 풀기</button></div></div></div>` : ""}
+    <p class="bon-note" style="margin:0"><b>키보드로 풀기</b> 숫자 키 1~5로 답을 고르고 Enter로 채점하거나 다음 문제로 넘어갈 수 있습니다.</p>
+  </section>`));
+
+  app.querySelectorAll("[data-type]").forEach(b => b.onclick = () => { state.type = b.dataset.type; saveFilters(); renderHome(); });
+  const toggle = (set, v) => { set.has(v) ? set.delete(v) : set.add(v); saveFilters(); renderHome(); };
+  app.querySelectorAll("[data-subj]").forEach(b => b.onclick = () => toggle(state.subjects, b.dataset.subj));
+  app.querySelectorAll("[data-grade]").forEach(b => b.onclick = () => toggle(state.grades, +b.dataset.grade));
+  app.querySelectorAll("[data-level]").forEach(b => b.onclick = () => toggle(state.levels, b.dataset.level));
+  app.querySelectorAll("[data-size]").forEach(b => b.onclick = () => { state.size = +b.dataset.size; saveFilters(); renderHome(); });
+  document.getElementById("start").onclick = () => {
+    const picked = shuffle(pool());
+    startQuiz(state.size ? picked.slice(0, state.size) : picked, TYPES[state.type].name);
+  };
+  const rw = document.getElementById("retry-wrong");
+  if (rw) rw.onclick = () => startQuiz(shuffle(BANK.filter(q => wrong.includes(q.id))), "오답 노트");
+  const cw = document.getElementById("clear-wrong");
+  if (cw) cw.onclick = () => { store.set("quiz-wrong", []); renderHome(); };
+}
+
+/* ---------- 문제 화면 ---------- */
+function startQuiz(list, label) {
+  quiz = { list, label, i: 0, picked: null, graded: false, answers: [] };
+  renderQuestion();
+  window.scrollTo(0, 0);
+}
+
+function renderQuestion() {
+  document.body.classList.add("in-quiz");
+  const q = quiz.list[quiz.i];
+  const n = quiz.list.length;
+  app.innerHTML = "";
+  app.append(el(`
+  <section class="stack">
+    <div class="qhead">
+      <div class="tags">
+        <span class="bon-tag">${q.s}</span><span class="bon-tag is-plain">${quiz.label}</span><span class="bon-tag is-plain">고${q.g}</span>
+        <span class="bon-tag lv-${q.d}">난이도 ${q.d}</span>
+      </div>
+      <span class="progress">${quiz.i + 1} / ${n}</span>
+    </div>
+    <div class="meter"><i style="width:${(quiz.i / n) * 100}%"></i></div>
+    <article class="panel">
+      ${q.p ? `<div class="passage">${q.p}</div>` : ""}
+      <div class="qtext"><span class="num">${quiz.i + 1}.</span>${q.q}</div>
+      <div class="choices" role="radiogroup" aria-label="선택지">
+        ${q.c.map((c, k) => `<button class="choice" role="radio" aria-checked="false" data-k="${k + 1}"><span class="bub">${k + 1}</span><span class="txt">${c}</span></button>`).join("")}
+      </div>
+      <div id="explain"></div>
+      <form class="report" id="report" data-endpoint="__FEEDBACK_ENDPOINT__" hidden novalidate>
+        <strong>이 문제 이상해요</strong>
+        <p>어떤 점이 이상한지 골라 주세요. 선생님이 확인하고 고칠게요. 이름·전화번호 같은 개인정보는 적지 마세요.</p>
+        <div class="chips">${REPORT_REASONS.map((r, k) => `<button type="button" class="chip" data-reason="${r}" aria-pressed="${k === 0}">${r}</button>`).join("")}</div>
+        <textarea id="report-msg" name="msg" maxlength="500" placeholder="자세한 내용 (적지 않아도 돼요)" aria-label="자세한 내용"></textarea>
+        <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <p class="status" id="report-status" role="status" aria-live="polite"></p>
+        <div class="actions">
+          <button type="button" class="btn ghost" id="report-copy">내용 복사</button>
+          <button type="button" class="btn ghost" id="report-close">닫기</button>
+          <button type="submit" class="btn" id="report-send">제보 보내기</button>
+        </div>
+      </form>
+      <div class="actions">
+        <button type="button" class="report-open" id="report-open">이 문제 이상해요</button>
+        <button class="btn ghost" id="quit">그만 풀기</button>
+        <button class="btn" id="go" disabled>채점하기</button>
+      </div>
+    </article>
+  </section>`));
+  quiz.picked = null; quiz.graded = false;
+  app.querySelectorAll(".choice").forEach(b => b.onclick = () => pick(+b.dataset.k));
+  document.getElementById("go").onclick = advance;
+  document.getElementById("quit").onclick = () => quiz.answers.length ? renderResult() : renderHome();
+  setupReport(q);
+}
+
+/* ---------- '이 문제 이상해요' 제보 ---------- */
+function setupReport(q) {
+  const form = document.getElementById("report"), status = document.getElementById("report-status");
+  const send = document.getElementById("report-send"), msg = document.getElementById("report-msg");
+  const say = (t, err) => { status.textContent = t; status.classList.toggle("err", !!err); };
+  let reason = REPORT_REASONS[0];
+  const text = () => `[문제 제보] ${q.id} (${q.s} · ${TYPES[q.t].name} · 고${q.g} · 난이도 ${q.d})\n사유: ${reason}\n내용: ${msg.value.trim() || "(없음)"}`;
+  document.getElementById("report-open").onclick = () => {
+    form.hidden = !form.hidden;
+    if (!form.hidden) {
+      if (!form.dataset.endpoint) say("아직 제보 받는 곳을 준비하고 있어요. '내용 복사'를 눌러 선생님께 전해 주세요.", true);
+      form.scrollIntoView({ block: "nearest" });
+    }
+  };
+  document.getElementById("report-close").onclick = () => { form.hidden = true; };
+  form.querySelectorAll("[data-reason]").forEach(b => b.onclick = () => {
+    reason = b.dataset.reason;
+    form.querySelectorAll("[data-reason]").forEach(x => x.setAttribute("aria-pressed", x === b));
+  });
+  document.getElementById("report-copy").onclick = async () => {
+    try { await navigator.clipboard.writeText(text()); say("복사했어요. 선생님께 붙여 넣어 보내 주세요."); }
+    catch (e) { say(text(), true); }
+  };
+  form.onsubmit = async e => {
+    e.preventDefault();
+    const url = form.dataset.endpoint;
+    if (!url) { say("아직 제보 받는 곳을 준비하고 있어요. '내용 복사'를 눌러 선생님께 전해 주세요.", true); return; }
+    if (Date.now() - store.get("quiz-report-at", 0) < 10000) { say("조금 전에 보냈어요. 10초 뒤에 다시 보내 주세요.", true); return; }
+    send.disabled = true; say("보내는 중…");
+    try {
+      // 구글 Apps Script 웹 앱은 응답을 읽을 수 없게(no-cors) 보내는 것이 가장 확실하다
+      await fetch(url, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ id: q.id, subject: q.s, type: TYPES[q.t].name, grade: "고" + q.g, level: q.d, reason, msg: msg.value.trim(),
+          question: q.q.replace(/<[^>]+>/g, " ").slice(0, 120), picked: quiz && quiz.picked || "", website: form.website.value }) });
+      store.set("quiz-report-at", Date.now());
+      msg.value = "";
+      say("보냈어요! 선생님이 확인해 볼게요. 고마워요.");
+    } catch (err) {
+      say("보내지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요.", true);
+    } finally { send.disabled = false; }
+  };
+}
+
+function pick(k) {
+  if (quiz.graded) return;
+  quiz.picked = k;
+  app.querySelectorAll(".choice").forEach(b => b.setAttribute("aria-checked", +b.dataset.k === k));
+  document.getElementById("go").disabled = false;
+}
+
+function advance() {
+  if (!quiz) return;
+  if (!quiz.graded) {
+    if (!quiz.picked) return;
+    const q = quiz.list[quiz.i];
+    const ok = quiz.picked === q.a;
+    quiz.graded = true;
+    quiz.answers.push({ q, picked: quiz.picked, ok });
+    let wrong = wrongList();
+    wrong = ok ? wrong.filter(id => id !== q.id) : [...new Set([...wrong, q.id])];
+    store.set("quiz-wrong", wrong);
+    app.querySelectorAll(".choice").forEach(b => {
+      const k = +b.dataset.k; b.disabled = true;
+      if (k === q.a) b.classList.add("correct");
+      else if (k === quiz.picked) b.classList.add("wrong");
+    });
+    document.getElementById("explain").innerHTML = `<div class="explain">
+      <div class="verdict ${ok ? "ok" : "bad"}">${ok ? "정답입니다" : `오답입니다 · 정답 ${NUMS[q.a - 1]}`}</div>
+      <p>${q.e}</p></div>`;
+    const go = document.getElementById("go");
+    go.textContent = quiz.i + 1 < quiz.list.length ? "다음 문제" : "결과 보기";
+    go.focus();
+  } else if (quiz.i + 1 < quiz.list.length) {
+    quiz.i++; renderQuestion(); window.scrollTo(0, 0);
+  } else {
+    renderResult();
+  }
+}
+
+/* ---------- 결과 화면 ---------- */
+function renderResult() {
+  const a = quiz.answers;
+  const right = a.filter(x => x.ok).length;
+  const pct = a.length ? Math.round(right / a.length * 100) : 0;
+  const bySubj = SUBJECTS.map(s => { const r = a.filter(x => x.q.s === s); return { s, n: r.length, ok: r.filter(x => x.ok).length }; }).filter(x => x.n);
+  const wrong = a.filter(x => !x.ok);
+  app.innerHTML = "";
+  app.append(el(`
+  <section class="stack">
+    <div class="score"><span class="big">${right} / ${a.length}</span><span class="sub">정답률 ${pct}% · ${quiz.label}</span></div>
+    <div class="panel"><div class="lbl">과목별 결과</div>
+      <div class="group">${bySubj.map(b => `<div class="brow"><span>${b.s}</span><div class="track"><i style="width:${b.ok / b.n * 100}%"></i></div><span>${b.ok}/${b.n}</span></div>`).join("")}</div>
+    </div>
+    ${wrong.length ? `<div class="group"><div class="lbl">틀린 문제 해설 (${wrong.length})</div><div class="review">
+      ${wrong.map(x => `<details><summary>[${x.q.s} · 고${x.q.g} · ${x.q.d}] ${x.q.q.split("\n")[0]}</summary>
+        ${x.q.p ? `<div class="passage">${x.q.p}</div>` : ""}
+        <p class="ans">내 답 ${NUMS[x.picked - 1]} ${x.q.c[x.picked - 1]} → 정답 ${NUMS[x.q.a - 1]} ${x.q.c[x.q.a - 1]}</p>
+        <p>${x.q.e}</p></details>`).join("")}
+    </div></div>` : `<p class="bon-note" style="margin:0"><b>모두 맞혔습니다.</b> 난이도를 올리거나 다른 과목에 도전해 보세요.</p>`}
+    <div class="actions">
+      ${wrong.length ? `<button class="btn ghost" id="again-wrong">틀린 문제 다시 풀기</button>` : ""}
+      <button class="btn" id="home">처음으로</button>
+    </div>
+  </section>`));
+  document.getElementById("home").onclick = () => { renderHome(); window.scrollTo(0, 0); };
+  const ag = document.getElementById("again-wrong");
+  if (ag) ag.onclick = () => startQuiz(shuffle(wrong.map(x => x.q)), "다시 풀기");
+  quiz = null;
+}
+
+document.addEventListener("keydown", e => {
+  if (!quiz || e.altKey || e.ctrlKey || e.metaKey) return;
+  if (e.target.closest && e.target.closest("#report")) return;  // 제보 내용을 쓰는 중에는 단축키를 끈다
+  if (e.key >= "1" && e.key <= "5") pick(+e.key);
+  else if (e.key === "Enter" && document.activeElement?.id !== "quit") { e.preventDefault(); advance(); }
+});
+
+renderHome();
+</script>
+<!--SW-->

@@ -1,0 +1,90 @@
+/* /assets/site.css 의 사본(단독 실행·미리보기용). 사이트에 올리는 파일은 원본 site.css 를 불러온다. */
+:root {
+  --bon-font: "Pretendard Variable", Pretendard, system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+  --bon-bg: #f4f5f7;       
+  --bon-card: #ffffff;     
+  --bon-soft: #eef1f5;     
+  --bon-text: #111827;     
+  --bon-body: #374151;     
+  --bon-muted: #6b7280;    
+  --bon-line: #e5e7eb;     
+  --bon-brand: #1e3a8a;
+  --bon-c-plan: #1d4ed8;   
+  --bon-c-jinhak: #6d28d9; 
+  --bon-c-gg: #0e7490;     
+  --bon-c-news: #15803d;   
+  --bon-c-book: #c2410c;   
+  --bon-c-matrix: #be185d; 
+  --bon-accent: var(--bon-brand);
+  --bon-max: 1160px;       
+  --bon-gutter: 16px;      
+  --bon-radius: 16px;      
+  --bon-radius-sm: 10px;   
+  --bon-shadow: 0 1px 2px rgba(17,24,39,.04), 0 2px 8px rgba(17,24,39,.05);
+  --bon-shadow-hover: 0 14px 32px rgba(17,24,39,.12);
+  --bon-ease: .18s ease;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bon-bg: #0f1216; --bon-card: #171b21; --bon-soft: #222831;
+    --bon-text: #f3f4f6; --bon-body: #d1d5db; --bon-muted: #9ca3af; --bon-line: #2a3039;
+    --bon-brand: #a5b4fc;
+    --bon-c-plan: #7aa2ff; --bon-c-jinhak: #b79bff; --bon-c-gg: #4fc3dc; --bon-c-news: #4ade80; --bon-c-book: #fb923c; --bon-c-matrix: #f472b6;
+    --bon-shadow: none; --bon-shadow-hover: 0 14px 32px rgba(0,0,0,.45); } }
+:root[data-theme="dark"] { --bon-bg: #0f1216; --bon-card: #171b21; --bon-soft: #222831;
+    --bon-text: #f3f4f6; --bon-body: #d1d5db; --bon-muted: #9ca3af; --bon-line: #2a3039;
+    --bon-brand: #a5b4fc;
+    --bon-c-plan: #7aa2ff; --bon-c-jinhak: #b79bff; --bon-c-gg: #4fc3dc; --bon-c-news: #4ade80; --bon-c-book: #fb923c; --bon-c-matrix: #f472b6;
+    --bon-shadow: none; --bon-shadow-hover: 0 14px 32px rgba(0,0,0,.45); }
+:where(*, *::before, *::after) { box-sizing: border-box; }
+:where(body) {
+  margin: 0; background: var(--bon-bg); color: var(--bon-body);
+  font-family: var(--bon-font); font-size: 16px; line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  word-break: keep-all;      
+  overflow-wrap: anywhere;   
+}
+:where(button, input, select, textarea) { font-family: inherit; }
+.bon-wrap { max-width: var(--bon-max); margin: 0 auto; padding: 0 var(--bon-gutter); }
+.bon-bar { background: var(--bon-card); border-bottom: 1px solid var(--bon-line); font-family: var(--bon-font); font-size: .82rem; line-height: 1.4; }
+.bon-bar-in { max-width: var(--bon-max); margin: 0 auto; padding: 8px var(--bon-gutter); display: flex; align-items: center; gap: 8px; min-width: 0; }
+.bon-bar a { display: inline-flex; align-items: center; gap: 7px; flex: none; color: var(--bon-brand); font-weight: 700; text-decoration: none; }
+.bon-bar a::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.bon-bar a:hover { text-decoration: underline; }
+.bon-bar a:focus-visible { outline: 2px solid var(--bon-brand); outline-offset: 2px; border-radius: 4px; }
+.bon-bar span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--bon-muted); }
+.bon-bar span::before { content: "›"; margin-right: 8px; color: var(--bon-muted); }
+@media print { .bon-bar { display: none; } }
+.bon-header { padding: 28px 0 8px; }
+.bon-school { display: flex; width: fit-content; align-items: center; gap: 8px; margin: 0; font-size: .9rem; font-weight: 700; color: var(--bon-brand); }
+.bon-school::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.bon-title { margin: 8px 0 10px; color: var(--bon-text); font-size: clamp(1.9rem, 4.6vw, 2.75rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.2; }
+.bon-lead { margin: 0; max-width: 42em; color: var(--bon-muted); font-size: 1.05rem; }
+.bon-sec { display: flex; align-items: baseline; gap: 12px; margin: 0 0 14px; }
+.bon-sec h2 { margin: 0; color: var(--bon-text); font-size: 1.15rem; font-weight: 700; letter-spacing: -0.02em; }
+.bon-sec p { margin: 0; color: var(--bon-muted); font-size: .9rem; }
+@media (max-width: 640px) { .bon-sec { flex-direction: column; gap: 2px; } }
+.bon-card {
+  position: relative; display: flex; flex-direction: column; min-width: 0;
+  background: var(--bon-card); border: 1px solid var(--bon-line); border-radius: var(--bon-radius);
+  overflow: hidden; box-shadow: var(--bon-shadow);
+  transition: transform var(--bon-ease), box-shadow var(--bon-ease), border-color var(--bon-ease);
+}
+a.bon-card { color: inherit; text-decoration: none; }
+a.bon-card:hover, .bon-card.is-link:hover { transform: translateY(-3px); box-shadow: var(--bon-shadow-hover); border-color: color-mix(in srgb, var(--bon-accent) 45%, var(--bon-line)); }
+.bon-card:focus-visible { outline: 3px solid var(--bon-accent); outline-offset: 3px; }
+.bon-tag { display: inline-flex; align-self: flex-start; width: fit-content; align-items: center; gap: 4px; font-size: .76rem; font-weight: 600; padding: 2px 9px; border-radius: 999px; color: var(--bon-accent); background: color-mix(in srgb, var(--bon-accent) 10%, var(--bon-card)); }
+.bon-tag.is-plain { color: var(--bon-muted); background: transparent; border: 1px solid var(--bon-line); }
+.bon-go { display: inline-flex; align-self: flex-start; width: fit-content; align-items: center; gap: 6px; font-weight: 700; font-size: .95rem; color: var(--bon-accent); text-decoration: none; }
+.bon-go::after { content: "→"; transition: transform var(--bon-ease); }
+.bon-go.is-out::after { content: "↗"; }
+.bon-go:hover { text-decoration: underline; }
+.bon-go:hover::after { transform: translateX(3px); }
+.bon-go.is-out:hover::after { transform: translate(2px, -2px); }
+.bon-note { margin: 14px 0 0; font-size: .86rem; color: var(--bon-muted); background: var(--bon-soft); border-radius: 12px; padding: 12px 16px; }
+.bon-note b { color: var(--bon-text); }
+.bon-footer { margin: 52px 0 32px; padding-top: 18px; border-top: 1px solid var(--bon-line); color: var(--bon-muted); font-size: .85rem; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; }
+.bon-footer p { margin: 0; }
+.bon-footer .bon-footer-info { flex: 1 1 100%; }
+.bon-footer a { color: inherit; }
+@media (prefers-reduced-motion: reduce) {
+  .bon-card, .bon-go::after { transition: none; }
+}
