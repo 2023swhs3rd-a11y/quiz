@@ -18,7 +18,7 @@ SITE_PATH = "/quiz/"
 # 비워 두면 학생 화면에 "준비하고 있어요"가 뜨고 '내용 복사'만 된다.
 FEEDBACK_ENDPOINT = ""
 
-MODULES = ["q_korean", "q_korean2", "q_english", "q_english2", "q_math", "q_math2", "q_history", "q_history2", "q_society", "q_society2", "q_science", "q_science2"]
+MODULES = ["q_korean", "q_korean2", "q_english", "q_english2", "q_math", "q_math2", "q_math3", "q_history", "q_history2", "q_society", "q_society2", "q_science", "q_science2"]
 
 
 def load():
@@ -106,15 +106,14 @@ def main():
     print("  정답 번호 분포:", dict(sorted(collections.Counter(q["a"] for q in bank).items())))
     for s in dict.fromkeys(q["s"] for q in bank):
         print(f"    {s}:", dict(sorted(collections.Counter(q["a"] for q in bank if q["s"] == s).items())))
-    cells = collections.Counter((q["t"], q["g"], q["d"]) for q in bank)
-    print("  유형·학년·난이도별 문항 수(칸마다 20문항 이상이어야 함):")
+    cells = collections.Counter((q["s"], q["g"], q["d"]) for q in bank)
+    print("  과목·학년·난이도별 문항 수(칸마다 20문항 이상이어야 함):")
     short = []
-    for t in ("단편", "수능"):
-        for g in (1, 2, 3):
-            print(f"    {t} 고{g}:", "  ".join(f"{d} {cells[(t, g, d)]}" for d in "하중상"))
-            short += [f"{t} 고{g} {d}: {cells[(t, g, d)]}" for d in "하중상" if cells[(t, g, d)] < 20]
+    for s in dict.fromkeys(q["s"] for q in bank):
+        print(f"    {s}:", " | ".join(f"고{g} " + " ".join(f"{d}{cells[(s, g, d)]}" for d in "하중상") for g in (1, 2, 3)))
+        short += [f"{s} 고{g} {d}: {cells[(s, g, d)]}" for g in (1, 2, 3) for d in "하중상" if cells[(s, g, d)] < 20]
     if short:
-        print("  !! 20문항 미만:", ", ".join(short))
+        print(f"  !! 20문항 미만 {len(short)}칸:", ", ".join(short))
     print("  난이도:", dict(collections.Counter(q["d"] for q in bank)), " 학년:", dict(sorted(collections.Counter(q["g"] for q in bank).items())))
 
     data = json.dumps(bank, ensure_ascii=False)
