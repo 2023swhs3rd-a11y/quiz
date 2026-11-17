@@ -18,7 +18,7 @@ SITE_PATH = "/quiz/"
 # 비워 두면 학생 화면에 "준비하고 있어요"가 뜨고 '내용 복사'만 된다.
 FEEDBACK_ENDPOINT = ""
 
-MODULES = ["q_korean", "q_korean2", "q_korean3", "q_english", "q_english2", "q_english3", "q_math", "q_math2", "q_math3", "q_history", "q_history2", "q_history3", "q_society", "q_society2", "q_society3", "q_science", "q_science2", "q_science3"]
+MODULES = ["q_korean", "q_korean2", "q_korean3", "q_korean4", "q_english", "q_english2", "q_english3", "q_math", "q_math2", "q_math3", "q_history", "q_history2", "q_history3", "q_society", "q_society2", "q_society3", "q_science", "q_science2", "q_science3"]
 
 
 def load():
@@ -39,6 +39,16 @@ def load():
             if not q["e"].strip(): errors.append(f"{where}: 해설 없음")
             code = {"국어": "KO", "영어": "EN", "수학": "MA", "한국사": "HI", "통합사회": "SO", "통합과학": "SC"}[mod.S]
             bank.append({"id": f"{code}-{i:03d}", "s": mod.S, **q})
+    # 한 지문에는 질문 하나만: 같은 지문을 두 문항 이상에서 쓰지 않는다
+    first = {}
+    for q in bank:
+        key = re.sub(r"\s+", "", q.get("p", ""))
+        if not key:
+            continue
+        if key in first:
+            errors.append(f"{q['id']}: {first[key]} 과 같은 지문을 다시 썼습니다(한 지문에는 질문 하나만)")
+        else:
+            first[key] = q["id"]
     return bank, errors
 
 
