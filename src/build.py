@@ -151,7 +151,7 @@ def main():
 
     # 3) 진로진학부 사이트 배포용(저장소 맨 위, GitHub Pages가 그대로 내보낸다): 원본 /assets/site.css 를 불러오고 웹앱 설정을 붙인다
     url = SITE_ORIGIN + SITE_PATH
-    desc = f"국어·영어·수학·한국사·통합사회·통합과학 {len(bank)}문항을 단편지식형과 수능형으로 나누어 풀고 정답과 해설을 확인하는 봉일천고 진로진학부 문제은행입니다."
+    desc = f"국어·영어·수학·한국사·통합사회·통합과학 {len(bank)}문항으로 연습하고, 무작위 50문제 골든벨에 도전하는 봉일천고 진로진학부 퀴즈입니다."
     head = f"""<meta name="description" content="{desc}">
 <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
 <link rel="icon" href="/favicon-32.png?v=2" sizes="32x32" type="image/png">
@@ -160,7 +160,7 @@ def main():
 <meta name="theme-color" content="#a16207">
 <link rel="canonical" href="{url}">
 <meta property="og:type" content="website">
-<meta property="og:title" content="봉일천고 주요과목 문제은행">
+<meta property="og:title" content="봉일천고 골든벨">
 <meta property="og:description" content="{desc}">
 <meta property="og:url" content="{url}">
 <meta property="og:site_name" content="봉일천고 진로진학부">
@@ -172,7 +172,7 @@ if ("serviceWorker" in navigator) window.addEventListener("load", () => navigato
     (dep / "index.html").write_text(page('<link rel="stylesheet" href="/assets/site.css?v=1">', head, sw, endpoint=FEEDBACK_ENDPOINT), encoding="utf-8")
     (dep / ".nojekyll").write_text("")
     (dep / "manifest.webmanifest").write_text(json.dumps({
-        "name": "봉일천고 주요과목 문제은행", "short_name": "문제은행", "description": desc, "lang": "ko",
+        "name": "봉일천고 골든벨", "short_name": "골든벨", "description": desc, "lang": "ko",
         "start_url": "./", "scope": "./", "display": "standalone",
         "background_color": "#f4f5f7", "theme_color": "#a16207",
         "icons": [{"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
