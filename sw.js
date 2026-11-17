@@ -1,5 +1,5 @@
 // 봉일천고 골든벨 서비스 워커: 온라인이면 새 파일을 받고, 오프라인이면 마지막으로 받은 파일을 보여 준다.
-const CACHE = "quiz-20261117-1080";
+const CACHE = "quiz-20261117-1170";
 self.addEventListener("install", e => { self.skipWaiting(); e.waitUntil(caches.open(CACHE).then(c => c.addAll(["./", "manifest.webmanifest"]))); });
 self.addEventListener("activate", e => e.waitUntil(
   caches.keys().then(keys => Promise.all(keys.filter(k => k.startsWith("quiz-") && k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())));

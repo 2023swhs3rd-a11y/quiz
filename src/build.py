@@ -18,7 +18,7 @@ SITE_PATH = "/quiz/"
 # 비워 두면 학생 화면에 "준비하고 있어요"가 뜨고 '내용 복사'만 된다.
 FEEDBACK_ENDPOINT = ""
 
-MODULES = ["q_korean", "q_korean2", "q_korean3", "q_korean4", "q_english", "q_english2", "q_english3", "q_english4", "q_math", "q_math2", "q_math3", "q_history", "q_history2", "q_history3", "q_society", "q_society2", "q_society3", "q_science", "q_science2", "q_science3"]
+MODULES = ["q_korean", "q_korean2", "q_korean3", "q_korean4", "q_english", "q_english2", "q_english3", "q_english4", "q_math", "q_math2", "q_math3", "q_math4", "q_history", "q_history2", "q_history3", "q_society", "q_society2", "q_society3", "q_science", "q_science2", "q_science3"]
 
 
 def load():
