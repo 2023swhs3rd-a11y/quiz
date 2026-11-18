@@ -18,7 +18,7 @@ SITE_PATH = "/quiz/"
 # 비워 두면 학생 화면에 "준비하고 있어요"가 뜨고 '내용 복사'만 된다.
 FEEDBACK_ENDPOINT = ""
 
-MODULES = ["q_korean", "q_korean2", "q_korean3", "q_korean4", "q_korean5", "q_english", "q_english2", "q_english3", "q_english4", "q_english5", "q_math", "q_math2", "q_math3", "q_math4", "q_history", "q_history2", "q_history3", "q_history4", "q_society", "q_society2", "q_society3", "q_society4", "q_science", "q_science2", "q_science3", "q_science4"]
+MODULES = ["q_korean", "q_korean2", "q_korean3", "q_korean4", "q_korean5", "q_korean6", "q_korean7", "q_english", "q_english2", "q_english3", "q_english4", "q_english5", "q_english6", "q_math", "q_math2", "q_math3", "q_math4", "q_math5", "q_history", "q_history2", "q_history3", "q_history4", "q_history5", "q_society", "q_society2", "q_society3", "q_society4", "q_society5", "q_science", "q_science2", "q_science3", "q_science4", "q_science5"]
 
 
 def load():
@@ -32,7 +32,7 @@ def load():
             where = f"{mod.S} #{i}"
             if q["t"] not in ("단편", "수능"): errors.append(f"{where}: 유형 오류 {q['t']}")
             if q["g"] not in (1, 2, 3): errors.append(f"{where}: 학년 오류 {q['g']}")
-            if q["d"] not in ("상", "중", "하"): errors.append(f"{where}: 난이도 오류 {q['d']}")
+            if q["d"] not in LEVELS: errors.append(f"{where}: 난이도 오류 {q['d']}")
             if len(q["c"]) != 5: errors.append(f"{where}: 선택지 {len(q['c'])}개")
             if len(set(q["c"])) != 5: errors.append(f"{where}: 중복 선택지")
             if not (1 <= q["a"] <= 5): errors.append(f"{where}: 정답 번호 오류")
@@ -52,6 +52,7 @@ def load():
     return bank, errors
 
 
+LEVELS = ("하", "중", "상", "최상")
 CIRCLED = "①②③④⑤"
 ORDERED = re.compile(r"^\s*(\(가\)|\(나\)|\(A\)|ㄱ|ㄴ|ㄷ|[①②③④⑤㉠㉡㉢㉣㉤ⓐⓑⓒⓓⓔ])")
 
@@ -67,7 +68,7 @@ def lead_num(c):
 
 
 def rebalance(bank):
-    """정답 번호가 한쪽에 몰리지 않도록 선택지 배치를 조정한다.
+    """정답 번호가 과목마다 한쪽에 몰리지 않도록 선택지 배치를 조정한다.
     - 순서가 의미 있는 선택지(①~⑤ 지시, ㄱㄴㄷ 조합, (가)(나) 순서, 해설이 번호를 언급)는 그대로 둔다.
     - 등차를 이루는 정수 선택지는 오름차순을 유지한 채 범위를 옮긴다.
     - 그 밖의 문장형 선택지는 정답을 목표 위치로 옮긴다(나머지 순서 유지)."""
@@ -87,9 +88,9 @@ def rebalance(bank):
             if d > 0 and all(nums[i + 1] - nums[i] == d for i in range(4)):
                 movable.append((q, "ap", nums, d))
                 continue
-            count[q["a"]] += 1
+            count[(q["s"], q["d"] == "최상", q["a"])] += 1
         elif fixed_text or "class='fr'" in "".join(q["c"]) or "π" in "".join(q["c"]):
-            count[q["a"]] += 1
+            count[(q["s"], q["d"] == "최상", q["a"])] += 1
         else:
             movable.append((q, "text", None, None))
     rnd.shuffle(movable)
@@ -100,8 +101,8 @@ def rebalance(bank):
             if min(nums) >= 0:
                 floor = 1 if min(nums) >= 1 else 0
                 options = [t for t in options if ans - (t - 1) * d >= floor]
-        low = min(count[t] for t in options)
-        target = rnd.choice([t for t in options if count[t] == low])
+        low = min(count[(q["s"], q["d"] == "최상", t)] for t in options)
+        target = rnd.choice([t for t in options if count[(q["s"], q["d"] == "최상", t)] == low])
         if kind == "ap":
             start = ans - (target - 1) * d
             q["c"] = [str(start + i * d).replace("-", "−") for i in range(5)]
@@ -110,13 +111,26 @@ def rebalance(bank):
             others = [c for i, c in enumerate(q["c"]) if i != q["a"] - 1]
             q["c"] = others[:target - 1] + [right] + others[target - 1:]
         q["a"] = target
-        count[target] += 1
+        count[(q["s"], q["d"] == "최상", target)] += 1
+
+
+LIMITS = re.compile(r"<sub>([^<]*)</sub><sup>([^<]*)</sup>")
+
+
+def stack_limits(bank):
+    """∫, Σ, [ ] 의 아래끝·위끝(<sub>a</sub><sup>b</sup>)을 위아래로 쌓아 보이게 한다."""
+    fix = lambda s: LIMITS.sub(r"<span class='lim'><sup>\2</sup><sub>\1</sub></span>", s)
+    for q in bank:
+        for k in ("q", "p", "e"):
+            if q.get(k): q[k] = fix(q[k])
+        q["c"] = [fix(c) for c in q["c"]]
 
 
 def main():
     bank, errors = load()
     if errors:
         print("\n".join(errors)); sys.exit(1)
+    stack_limits(bank)
     rebalance(bank)
 
     print(f"총 {len(bank)}문항")
@@ -130,8 +144,10 @@ def main():
     print("  과목·학년·난이도별 문항 수(칸마다 20문항 이상이어야 함):")
     short = []
     for s in dict.fromkeys(q["s"] for q in bank):
-        print(f"    {s}:", " | ".join(f"고{g} " + " ".join(f"{d}{cells[(s, g, d)]}" for d in "하중상") for g in (1, 2, 3)))
+        print(f"    {s}:", " | ".join(f"고{g} " + " ".join(f"{d}{cells[(s, g, d)]}" for d in LEVELS if cells[(s, g, d)] or d != "최상") for g in (1, 2, 3)))
         short += [f"{s} 고{g} {d}: {cells[(s, g, d)]}" for g in (1, 2, 3) for d in "하중상" if cells[(s, g, d)] < 20]
+        if any(cells[(s, g, "최상")] for g in (1, 2, 3)):
+            short += [f"{s} 고{g} 최상: {cells[(s, g, '최상')]}" for g in (1, 2, 3) if 0 < cells[(s, g, "최상")] < 20]
     if short:
         print(f"  !! 20문항 미만 {len(short)}칸:", ", ".join(short))
     print("  난이도:", dict(collections.Counter(q["d"] for q in bank)), " 학년:", dict(sorted(collections.Counter(q["g"] for q in bank).items())))

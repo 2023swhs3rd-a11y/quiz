@@ -26,8 +26,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* 머리 */
-.stats { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 14px 0 0; padding: 0; list-style: none; font-size: .92rem; color: var(--muted); }
-.stats b { color: var(--text); font-weight: 800; font-size: 1.05rem; font-variant-numeric: tabular-nums; margin-right: 3px; }
+.stats { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; margin: 14px 0 0; padding: 0; list-style: none; font-size: .92rem; color: var(--muted); }
+.stats li { line-height: 1.5; }
+.stats b { color: var(--text); font-weight: 800; font-size: 1.05rem; line-height: 1; font-variant-numeric: tabular-nums; margin-right: 3px; }
 .stats li:first-child b { color: var(--accent); }
 
 /* 설정 화면 */
@@ -62,6 +63,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .tags { display: flex; gap: 6px; flex-wrap: wrap; }
 .lv-상 { --bon-accent: var(--bad); }
 .lv-하 { --bon-accent: var(--ok); }
+.lv-최상 { --bon-accent: #7c3aed; }
 .progress { font-variant-numeric: tabular-nums; color: var(--muted); font-size: .9rem; font-weight: 600; }
 .meter { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
 .meter i { display: block; height: 100%; background: var(--accent); transition: width .25s ease; }
@@ -72,6 +74,9 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .box { border: 1px solid var(--line); border-radius: 10px; background: var(--card); padding: 10px 14px; margin: 8px 0 4px; font-weight: 400; font-size: .97rem; line-height: 1.75; white-space: normal; color: var(--body); }
 .passage .box { margin: 0 0 10px; }
 .fr { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; font-size: .82em; line-height: 1.15; margin: 0 2px; }
+sup, sub { line-height: 0; }
+.lim { display: inline-flex; flex-direction: column; vertical-align: middle; font-size: .72em; line-height: 1.1; margin: 0 1px 0 0; text-align: left; }
+.lim sup, .lim sub { font-size: 1em; vertical-align: baseline; line-height: 1.1; }
 .fr span:first-child { border-bottom: 1px solid currentColor; padding: 0 2px; }
 .choices { display: grid; gap: 8px; }
 .choice { display: flex; align-items: flex-start; gap: 12px; text-align: left; width: 100%; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; min-width: 0; color: var(--text); transition: border-color .18s ease, background .18s ease; }
@@ -142,19 +147,19 @@ body.in-quiz .bon-header { display: none; }
 .timebar .t { display: flex; gap: 16px; font-size: .92rem; color: var(--muted); }
 .timebar .t b { color: var(--text); font-weight: 800; font-size: 1.02rem; margin-left: 4px; }
 .timebar .t .cur b { color: var(--accent); }
-.timebar .mode { font-weight: 800; color: var(--text); }
+.timebar .mode { font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 10px; }
+.homebtn { border: 1px solid var(--line); background: var(--card); color: var(--text); border-radius: 8px; padding: 4px 10px; font-size: .85rem; font-weight: 600; }
+.homebtn:hover { border-color: var(--accent); }
 
 /* 문제 카드 오른쪽 위의 제보 */
-.qcard { position: relative; }
-.flag { position: absolute; top: 10px; right: 12px; z-index: 2; max-width: calc(100% - 24px); }
+.flag { justify-self: end; min-width: 0; max-width: 100%; margin: -6px -4px -8px 0; }
+.flag[open] { justify-self: stretch; margin-bottom: 0; }
 .flag > summary { list-style: none; cursor: pointer; font-size: .78rem; color: var(--muted); padding: 2px 8px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); white-space: nowrap; margin-left: auto; width: max-content; }
 .flag > summary::-webkit-details-marker { display: none; }
 .flag > summary:hover { color: var(--text); }
 .flag > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.flag[open] { left: 12px; }
 .flag[open] > summary { color: var(--text); }
-.flag .report { margin-top: 8px; box-shadow: var(--shadow); border: 1px solid var(--line); }
-.qcard > .passage:first-of-type, .qcard > .qtext:first-of-type { margin-top: 18px; }
+.flag .report { margin-top: 8px; border: 1px solid var(--line); }
 
 /* 그림·도표 */
 .fig { margin: 8px 0 4px; display: grid; justify-items: center; gap: 4px; }
@@ -193,6 +198,7 @@ const SUBJECTS = ["국어", "영어", "수학", "한국사", "통합사회", "�
 const TYPES = { "단편": "단편지식형", "수능": "수능형" };
 const NUMS = ["①", "②", "③", "④", "⑤"];
 const BELL_SIZE = 50;
+const LEVELS = ["하", "중", "상", "최상"];
 const REPORT_REASONS = ["정답이 틀린 것 같아요", "해설이 이상해요", "문제·선택지에 오타가 있어요", "기타"];
 const app = document.getElementById("app");
 
@@ -209,7 +215,7 @@ const state = {
   types: keep(saved.types, Object.keys(TYPES)),
   subjects: keep(saved.subjects, SUBJECTS),
   grades: keep(saved.grades, [1, 2, 3]),
-  levels: keep(saved.levels, ["하", "중", "상"]),
+  levels: keep(saved.levels, LEVELS),
   bellGrades: keep(saved.bellGrades, [1, 2, 3]),
 };
 let quiz = null;
@@ -253,7 +259,7 @@ function renderHome() {
       ${SUBJECTS.map(s => chip("data-subj", s, state.subjects.has(s), s, cnt(q => q.s === s))).join("")}
     </div></div>
     <div class="row3">
-      <div class="group"><div class="lbl">난이도</div><div class="chips">${["하", "중", "상"].map(d => chip("data-level", d, state.levels.has(d), d)).join("")}</div></div>
+      <div class="group"><div class="lbl">난이도</div><div class="chips">${LEVELS.map(d => chip("data-level", d, state.levels.has(d), d)).join("")}</div></div>
       <div class="group"><div class="lbl">학년</div><div class="chips">${[1, 2, 3].map(g => chip("data-grade", g, state.grades.has(g), "고" + g)).join("")}</div></div>
       <div class="group"><div class="lbl">유형</div><div class="chips">${Object.entries(TYPES).map(([k, v]) => chip("data-type", k, state.types.has(k), v)).join("")}</div></div>
     </div>
@@ -333,7 +339,7 @@ function renderQuestion() {
   app.append(el(`
   <section class="stack">
     <div class="timebar" role="timer" aria-live="off">
-      <span class="mode">${quiz.label}</span>
+      <span class="mode"><button class="homebtn" id="tohome">처음으로</button>${quiz.label}</span>
       <span class="t"><span class="cur">이 문제<b id="t-cur">0:00</b></span><span>총<b id="t-total">${fmt(Date.now() - quiz.t0)}</b></span></span>
     </div>
     <div class="qhead" style="padding-top:0">
@@ -374,6 +380,7 @@ function renderQuestion() {
   quiz.picked = null; quiz.graded = false;
   app.querySelectorAll(".choice").forEach(b => b.onclick = () => pick(+b.dataset.k));
   document.getElementById("go").onclick = advance;
+  document.getElementById("tohome").onclick = () => { stopClock(); renderHome(); window.scrollTo(0, 0); };
   document.getElementById("quit").onclick = () => quiz.answers.length ? renderResult() : renderHome();
   setupReport(q);
   drawClock();
@@ -480,7 +487,8 @@ function renderResult() {
   app.innerHTML = "";
   app.append(el(`
   <section class="stack">
-    <div class="score"><span class="big">${right} / ${a.length}</span><span class="sub">정답률 ${pct}% · ${quiz.label}</span></div>
+    <div class="timebar"><span class="mode"><button class="homebtn" id="tohome">처음으로</button>결과</span></div>
+    <div class="score" style="padding-top:4px"><span class="big">${right} / ${a.length}</span><span class="sub">정답률 ${pct}% · ${quiz.label}</span></div>
     <ul class="stats" style="margin:0"><li>총 소요 시간<b style="margin-left:6px">${fmt(total)}</b></li><li>문제당 평균<b style="margin-left:6px">${fmt(avg)}</b></li></ul>
     ${record}
     <div class="panel"><div class="lbl">과목별 결과</div>
@@ -498,7 +506,7 @@ function renderResult() {
       <button class="btn" id="home">처음으로</button>
     </div>
   </section>`));
-  document.getElementById("home").onclick = () => { renderHome(); window.scrollTo(0, 0); };
+  document.getElementById("home").onclick = document.getElementById("tohome").onclick = () => { renderHome(); window.scrollTo(0, 0); };
   const ag = document.getElementById("again-wrong");
   if (ag) ag.onclick = () => startQuiz(shuffle(wrong.map(x => x.q)), { mode: "ten", label: "다시 풀기" });
   quiz = null;
