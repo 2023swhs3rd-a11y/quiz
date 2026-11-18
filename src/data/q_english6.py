@@ -3,7 +3,7 @@ S = "영어"
 from helpers import Q
 from q_english5 import N5, ORD, U, ORDER, INSERT
 
-BLANK = "<u>　　　　　　　　</u>"
+BLANK = "<u style='display:inline-block;width:6em;max-width:40%'>&nbsp;</u>"
 QB = "다음 빈칸에 들어갈 말로 가장 적절한 것은?"
 
 QUESTIONS = [
