@@ -94,7 +94,7 @@ def _cpi():
 
 def _ext():
     p = Plot(0, 10, 0, 10, w=260, h=220, xlabel="생산량", ylabel="가격", origin=True)
-    p.seg(1, 9, 9, 1, width=2).text(9, 1, "D", dx=4)
+    p.seg(1, 9, 9, 1, width=2).text(1, 9, "D", dx=6, dy=-2)
     p.seg(1, 1.5, 9, 7.5, width=2).text(9, 7.5, "S(사적 비용)", dx=-60, dy=-6)
     p.seg(1, 3.5, 7.5, 8.375, width=2, dash=True).text(7.5, 8.4, "사회적 비용", dx=-60, dy=-6)
     p.dot(37 / 7, 33 / 7, "E₁", dx=-4, dy=16)

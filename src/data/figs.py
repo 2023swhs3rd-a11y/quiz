@@ -29,7 +29,7 @@ class Plot:
             y0 = self.Y(max(min(0, ymax), ymin))
             self.parts.append(f"<line x1='{pad - 6}' y1='{_num(y0)}' x2='{w - pad + 8}' y2='{_num(y0)}' stroke='currentColor' stroke-width='1.2' marker-end='url(#ar)'/>")
             self.parts.append(f"<line x1='{_num(x0)}' y1='{h - pad + 6}' x2='{_num(x0)}' y2='{pad - 8}' stroke='currentColor' stroke-width='1.2' marker-end='url(#ar)'/>")
-            if len(xlabel) <= 1:
+            if len(xlabel) <= 1 and xlabel.isascii():
                 self.parts.append(f"<text x='{w - pad + 10}' y='{_num(y0 + 4)}' font-size='13' font-style='italic' fill='currentColor'>{xlabel}</text>")
             else:  # 긴 축 이름은 화살표 위에 오른쪽 맞춤
                 self.parts.append(f"<text x='{w - pad + 8}' y='{_num(y0 - 8)}' font-size='12' text-anchor='end' fill='currentColor'>{xlabel}</text>")

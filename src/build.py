@@ -32,7 +32,7 @@ def load():
             where = f"{mod.S} #{i}"
             if q["t"] not in ("단편", "수능"): errors.append(f"{where}: 유형 오류 {q['t']}")
             if q["g"] not in (1, 2, 3): errors.append(f"{where}: 학년 오류 {q['g']}")
-            if q["d"] not in ("상", "중", "하"): errors.append(f"{where}: 난이도 오류 {q['d']}")
+            if q["d"] not in LEVELS: errors.append(f"{where}: 난이도 오류 {q['d']}")
             if len(q["c"]) != 5: errors.append(f"{where}: 선택지 {len(q['c'])}개")
             if len(set(q["c"])) != 5: errors.append(f"{where}: 중복 선택지")
             if not (1 <= q["a"] <= 5): errors.append(f"{where}: 정답 번호 오류")
@@ -52,6 +52,7 @@ def load():
     return bank, errors
 
 
+LEVELS = ("하", "중", "상", "최상")
 CIRCLED = "①②③④⑤"
 ORDERED = re.compile(r"^\s*(\(가\)|\(나\)|\(A\)|ㄱ|ㄴ|ㄷ|[①②③④⑤㉠㉡㉢㉣㉤ⓐⓑⓒⓓⓔ])")
 
@@ -113,10 +114,23 @@ def rebalance(bank):
         count[target] += 1
 
 
+LIMITS = re.compile(r"<sub>([^<]*)</sub><sup>([^<]*)</sup>")
+
+
+def stack_limits(bank):
+    """∫, Σ, [ ] 의 아래끝·위끝(<sub>a</sub><sup>b</sup>)을 위아래로 쌓아 보이게 한다."""
+    fix = lambda s: LIMITS.sub(r"<span class='lim'><sup>\2</sup><sub>\1</sub></span>", s)
+    for q in bank:
+        for k in ("q", "p", "e"):
+            if q.get(k): q[k] = fix(q[k])
+        q["c"] = [fix(c) for c in q["c"]]
+
+
 def main():
     bank, errors = load()
     if errors:
         print("\n".join(errors)); sys.exit(1)
+    stack_limits(bank)
     rebalance(bank)
 
     print(f"총 {len(bank)}문항")
@@ -130,8 +144,10 @@ def main():
     print("  과목·학년·난이도별 문항 수(칸마다 20문항 이상이어야 함):")
     short = []
     for s in dict.fromkeys(q["s"] for q in bank):
-        print(f"    {s}:", " | ".join(f"고{g} " + " ".join(f"{d}{cells[(s, g, d)]}" for d in "하중상") for g in (1, 2, 3)))
+        print(f"    {s}:", " | ".join(f"고{g} " + " ".join(f"{d}{cells[(s, g, d)]}" for d in LEVELS if cells[(s, g, d)] or d != "최상") for g in (1, 2, 3)))
         short += [f"{s} 고{g} {d}: {cells[(s, g, d)]}" for g in (1, 2, 3) for d in "하중상" if cells[(s, g, d)] < 20]
+        if any(cells[(s, g, "최상")] for g in (1, 2, 3)):
+            short += [f"{s} 고{g} 최상: {cells[(s, g, '최상')]}" for g in (1, 2, 3) if 0 < cells[(s, g, "최상")] < 20]
     if short:
         print(f"  !! 20문항 미만 {len(short)}칸:", ", ".join(short))
     print("  난이도:", dict(collections.Counter(q["d"] for q in bank)), " 학년:", dict(sorted(collections.Counter(q["g"] for q in bank).items())))
