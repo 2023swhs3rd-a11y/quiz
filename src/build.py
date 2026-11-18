@@ -173,14 +173,16 @@ def main():
     dist = OUT / "dist"
     dist.mkdir(exist_ok=True)
     (dist / "artifact.html").write_text(page(fallback, '<meta name="claude:viewport-fit-sides" content="cover">', "", doc=False), encoding="utf-8")
-    (dist / "standalone.html").write_text(page(fallback, "", "", endpoint=FEEDBACK_ENDPOINT), encoding="utf-8")
+    from urllib.parse import quote
+    fav = '<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,' + quote((SRC / "favicon.svg").read_text(encoding="utf-8").strip()) + '">'
+    (dist / "standalone.html").write_text(page(fallback, fav, "", endpoint=FEEDBACK_ENDPOINT), encoding="utf-8")
 
     # 3) 진로진학부 사이트 배포용(저장소 맨 위, GitHub Pages가 그대로 내보낸다): 원본 /assets/site.css 를 불러오고 웹앱 설정을 붙인다
     url = SITE_ORIGIN + SITE_PATH
     desc = f"국어·영어·수학·한국사·통합사회·통합과학 {len(bank)}문항으로 연습하고, 무작위 50문제 골든벨에 도전하는 봉일천고 진로진학부 퀴즈입니다."
     head = f"""<meta name="description" content="{desc}">
-<link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
-<link rel="icon" href="/favicon-32.png?v=2" sizes="32x32" type="image/png">
+<link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png?v=3" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#a16207">
@@ -205,7 +207,7 @@ if ("serviceWorker" in navigator) window.addEventListener("load", () => navigato
                   {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}],
     }, ensure_ascii=False, indent=1), encoding="utf-8")
     (dep / "sw.js").write_text((SRC / "sw.js").read_text(encoding="utf-8").replace("__VERSION__", today.strftime("%Y%m%d") + f"-{len(bank)}"), encoding="utf-8")
-    for icon in ("icon-192.png", "icon-512.png"):
+    for icon in ("icon-192.png", "icon-512.png", "favicon.svg", "favicon-32.png"):
         if (SRC / icon).exists():
             shutil.copy(SRC / icon, dep / icon)
     print("index.html·manifest·sw.js(사이트 배포용), dist/standalone.html(단독 실행), dist/artifact.html(미리보기), questions.json 생성 완료")
