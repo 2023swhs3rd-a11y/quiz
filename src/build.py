@@ -18,7 +18,7 @@ SITE_PATH = "/quiz/"
 # 비워 두면 학생 화면에 "준비하고 있어요"가 뜨고 '내용 복사'만 된다.
 FEEDBACK_ENDPOINT = ""
 
-MODULES = ["q_korean", "q_korean2", "q_korean3", "q_korean4", "q_korean5", "q_korean6", "q_korean7", "q_english", "q_english2", "q_english3", "q_english4", "q_english5", "q_english6", "q_math", "q_math2", "q_math3", "q_math4", "q_math5", "q_history", "q_history2", "q_history3", "q_history4", "q_society", "q_society2", "q_society3", "q_society4", "q_science", "q_science2", "q_science3", "q_science4"]
+MODULES = ["q_korean", "q_korean2", "q_korean3", "q_korean4", "q_korean5", "q_korean6", "q_korean7", "q_english", "q_english2", "q_english3", "q_english4", "q_english5", "q_english6", "q_math", "q_math2", "q_math3", "q_math4", "q_math5", "q_history", "q_history2", "q_history3", "q_history4", "q_history5", "q_society", "q_society2", "q_society3", "q_society4", "q_science", "q_science2", "q_science3", "q_science4"]
 
 
 def load():
@@ -68,7 +68,7 @@ def lead_num(c):
 
 
 def rebalance(bank):
-    """정답 번호가 한쪽에 몰리지 않도록 선택지 배치를 조정한다.
+    """정답 번호가 과목마다 한쪽에 몰리지 않도록 선택지 배치를 조정한다.
     - 순서가 의미 있는 선택지(①~⑤ 지시, ㄱㄴㄷ 조합, (가)(나) 순서, 해설이 번호를 언급)는 그대로 둔다.
     - 등차를 이루는 정수 선택지는 오름차순을 유지한 채 범위를 옮긴다.
     - 그 밖의 문장형 선택지는 정답을 목표 위치로 옮긴다(나머지 순서 유지)."""
@@ -88,9 +88,9 @@ def rebalance(bank):
             if d > 0 and all(nums[i + 1] - nums[i] == d for i in range(4)):
                 movable.append((q, "ap", nums, d))
                 continue
-            count[q["a"]] += 1
+            count[(q["s"], q["a"])] += 1
         elif fixed_text or "class='fr'" in "".join(q["c"]) or "π" in "".join(q["c"]):
-            count[q["a"]] += 1
+            count[(q["s"], q["a"])] += 1
         else:
             movable.append((q, "text", None, None))
     rnd.shuffle(movable)
@@ -101,8 +101,8 @@ def rebalance(bank):
             if min(nums) >= 0:
                 floor = 1 if min(nums) >= 1 else 0
                 options = [t for t in options if ans - (t - 1) * d >= floor]
-        low = min(count[t] for t in options)
-        target = rnd.choice([t for t in options if count[t] == low])
+        low = min(count[(q["s"], t)] for t in options)
+        target = rnd.choice([t for t in options if count[(q["s"], t)] == low])
         if kind == "ap":
             start = ans - (target - 1) * d
             q["c"] = [str(start + i * d).replace("-", "−") for i in range(5)]
@@ -111,7 +111,7 @@ def rebalance(bank):
             others = [c for i, c in enumerate(q["c"]) if i != q["a"] - 1]
             q["c"] = others[:target - 1] + [right] + others[target - 1:]
         q["a"] = target
-        count[target] += 1
+        count[(q["s"], target)] += 1
 
 
 LIMITS = re.compile(r"<sub>([^<]*)</sub><sup>([^<]*)</sup>")
