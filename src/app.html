@@ -1,4 +1,4 @@
-<title>주요과목 문제은행</title>
+<title>봉일천고 골든벨</title>
 <!--HEAD-EXTRA-->
 <!--SITE-CSS-->
 <style>
@@ -92,10 +92,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 body.in-quiz .bon-header { display: none; }
 
-/* '이 문제 이상해요' 제보 */
-.report-open { all: unset; cursor: pointer; margin-right: auto; align-self: center; font-size: .86rem; color: var(--muted); border-bottom: 1px dashed currentColor; }
-.report-open:hover { color: var(--text); }
-.report-open:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+/* '이 문제 이상해요' 제보: 문제 카드 오른쪽 위에 작게, 접어 둔다 */
 .report { background: var(--soft); border-radius: 12px; padding: 14px 16px; display: grid; gap: 10px; }
 .report strong { color: var(--text); }
 .report p { margin: 0; font-size: .86rem; color: var(--muted); }
@@ -125,21 +122,66 @@ body.in-quiz .bon-header { display: none; }
   .panel { padding: 16px 14px; }
   .brow { grid-template-columns: 5.5em 1fr 3.5em; }
 }
+
+/* 모드 선택 */
+.modes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.mode-card { all: unset; box-sizing: border-box; cursor: pointer; display: grid; gap: 4px; padding: 16px 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); box-shadow: var(--shadow); transition: border-color .18s ease, background .18s ease; }
+.mode-card strong { color: var(--text); font-size: 1.2rem; font-weight: 800; letter-spacing: -0.02em; }
+.mode-card span { color: var(--muted); font-size: .9rem; }
+.mode-card:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.mode-card[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--card)); box-shadow: inset 0 0 0 1px var(--accent); }
+.mode-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.bell-rule { margin: 0; color: var(--body); line-height: 1.7; }
+.best { font-variant-numeric: tabular-nums; color: var(--muted); font-size: .92rem; }
+.best b { color: var(--accent); }
+
+/* 시간 표시 줄 (문제 화면 맨 위에 붙어 있음) */
+.timebar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  padding: 10px 0; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.timebar .t { display: flex; gap: 16px; font-size: .92rem; color: var(--muted); }
+.timebar .t b { color: var(--text); font-weight: 800; font-size: 1.02rem; margin-left: 4px; }
+.timebar .t .cur b { color: var(--accent); }
+.timebar .mode { font-weight: 800; color: var(--text); }
+
+/* 문제 카드 오른쪽 위의 제보 */
+.qcard { position: relative; }
+.flag { position: absolute; top: 10px; right: 12px; z-index: 2; max-width: calc(100% - 24px); }
+.flag > summary { list-style: none; cursor: pointer; font-size: .78rem; color: var(--muted); padding: 2px 8px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); white-space: nowrap; margin-left: auto; width: max-content; }
+.flag > summary::-webkit-details-marker { display: none; }
+.flag > summary:hover { color: var(--text); }
+.flag > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.flag[open] { left: 12px; }
+.flag[open] > summary { color: var(--text); }
+.flag .report { margin-top: 8px; box-shadow: var(--shadow); border: 1px solid var(--line); }
+.qcard > .passage:first-of-type, .qcard > .qtext:first-of-type { margin-top: 18px; }
+
+/* 그림·도표 */
+.fig { margin: 8px 0 4px; display: grid; justify-items: center; gap: 4px; }
+.fig svg { max-width: 100%; height: auto; color: var(--text); }
+.fig figcaption { font-size: .82rem; color: var(--muted); }
+.tbl { border-collapse: collapse; margin: 8px auto 4px; font-size: .92rem; font-variant-numeric: tabular-nums; }
+.tbl th, .tbl td { border: 1px solid var(--line); padding: 5px 8px; text-align: center; word-break: keep-all; overflow-wrap: normal; }
+.tbl th { background: var(--soft); color: var(--text); font-weight: 700; }
+.tblwrap { overflow-x: auto; max-width: 100%; }
+.ptime { color: var(--muted); font-size: .85rem; font-variant-numeric: tabular-nums; }
+
+@media (max-width: 640px) { .modes { grid-template-columns: minmax(0, 1fr); } .timebar .t { gap: 10px; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 <!--HEAD-END-->
 <nav class="bon-bar" aria-label="진로진학부 사이트"><div class="bon-bar-in">
-  <a href="/">봉일천고등학교 진로진학부</a><span aria-current="page">주요과목 문제은행</span>
+  <a href="/">봉일천고등학교 진로진학부</a><span aria-current="page">봉일천고 골든벨</span>
 </div></nav>
 <div class="wrap">
   <header class="bon-header">
-    <h1 class="bon-title">주요과목 문제은행</h1>
-    <p class="bon-lead">국어·영어·수학·한국사·통합사회·통합과학을 5지 선다 문제로 풀어 보고, 정답과 해설을 바로 확인하세요.</p>
+    <h1 class="bon-title">봉일천고 골든벨</h1>
+    <p class="bon-lead">국어·영어·수학·한국사·통합사회·통합과학 5지 선다 문제로 연습하고, 무작위 50문제 골든벨에 도전해 보세요.</p>
     <ul class="stats" id="stats"></ul>
   </header>
   <main id="app"></main>
   <footer class="bon-footer">
-    <p class="bon-footer-info">모든 문항은 학습용으로 새로 만든 창작 문항입니다. 오답 노트와 선택한 조건은 이 기기의 브라우저에만 저장됩니다.</p>
+    <p class="bon-footer-info">모든 문항은 학습용으로 새로 만든 창작 문항입니다. 오답 노트, 선택한 조건, 골든벨 최고 기록은 이 기기의 브라우저에만 저장됩니다.</p>
     <p>© 봉일천고등학교 진로진학부</p>
     <p>마지막 정리: __DATE__</p>
   </footer>
@@ -148,8 +190,9 @@ body.in-quiz .bon-header { display: none; }
 <script>
 const BANK = /*__BANK__*/[];
 const SUBJECTS = ["국어", "영어", "수학", "한국사", "통합사회", "통합과학"];
-const TYPES = { "단편": { name: "단편지식형", desc: "개념·용어·공식을 빠르게 확인" }, "수능": { name: "수능형", desc: "지문·자료를 읽고 분석·추론" } };
+const TYPES = { "단편": "단편지식형", "수능": "수능형" };
 const NUMS = ["①", "②", "③", "④", "⑤"];
+const BELL_SIZE = 50;
 const REPORT_REASONS = ["정답이 틀린 것 같아요", "해설이 이상해요", "문제·선택지에 오타가 있어요", "기타"];
 const app = document.getElementById("app");
 
@@ -158,101 +201,123 @@ const store = {
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 };
 
+const saved = store.get("quiz-filters2", {}) || {};
+const keep = (arr, all) => { const v = (Array.isArray(arr) ? arr : all).filter(x => all.includes(x)); return new Set(v.length ? v : all); };
 const state = {
-  type: "단편",
-  subjects: new Set(SUBJECTS),
-  grades: new Set([1, 2, 3]),
-  levels: new Set(["하", "중", "상"]),
-  size: 10,
-  ...(() => { const s = store.get("quiz-filters", null); if (!s) return {}; return {
-    type: s.type in TYPES ? s.type : "단편",
-    subjects: new Set((s.subjects || SUBJECTS).filter(x => SUBJECTS.includes(x))),
-    grades: new Set(s.grades || [1, 2, 3]), levels: new Set(s.levels || ["하", "중", "상"]), size: s.size || 10 }; })()
+  mode: saved.mode === "bell" ? "bell" : "practice",
+  pace: saved.pace === "one" ? "one" : "ten",
+  types: keep(saved.types, Object.keys(TYPES)),
+  subjects: keep(saved.subjects, SUBJECTS),
+  grades: keep(saved.grades, [1, 2, 3]),
+  levels: keep(saved.levels, ["하", "중", "상"]),
+  bellGrades: keep(saved.bellGrades, [1, 2, 3]),
 };
 let quiz = null;
 
 function saveFilters() {
-  store.set("quiz-filters", { type: state.type, subjects: [...state.subjects], grades: [...state.grades], levels: [...state.levels], size: state.size });
+  store.set("quiz-filters2", { mode: state.mode, pace: state.pace, types: [...state.types], subjects: [...state.subjects],
+    grades: [...state.grades], levels: [...state.levels], bellGrades: [...state.bellGrades] });
 }
-function pool() {
-  return BANK.filter(q => q.t === state.type && state.subjects.has(q.s) && state.grades.has(q.g) && state.levels.has(q.d));
-}
+const practicePool = () => BANK.filter(q => state.types.has(q.t) && state.subjects.has(q.s) && state.grades.has(q.g) && state.levels.has(q.d));
+const bellPool = () => BANK.filter(q => state.bellGrades.has(q.g));
 function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 function el(html) { const t = document.createElement("template"); t.innerHTML = html.trim(); return t.content; }
 function wrongList() { return store.get("quiz-wrong", []).filter(id => BANK.some(q => q.id === id)); }
+function fmt(ms) { const s = Math.floor(ms / 1000); const h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, x = s % 60;
+  return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(x).padStart(2, "0"); }
+const chip = (attr, v, on, label, n) => `<button class="chip" ${attr}="${v}" aria-pressed="${on}">${label}${n === undefined ? "" : `<small>${n}</small>`}</button>`;
 
-/* ---------- 설정 화면 ---------- */
+/* 골든벨 문제 고르기: 과목이 고르게 섞이도록 과목별로 돌아가며 뽑는다 */
+function bellPick() {
+  const by = SUBJECTS.map(s => shuffle(bellPool().filter(q => q.s === s)));
+  const out = [];
+  for (let r = 0; out.length < BELL_SIZE && by.some(a => a.length); r++)
+    for (const a of shuffle(by)) if (a.length && out.length < BELL_SIZE) out.push(a.pop());
+  return shuffle(out);
+}
+
+/* ---------- 첫 화면 ---------- */
 function renderHome() {
-  quiz = null;
+  stopClock(); quiz = null;
   document.body.classList.remove("in-quiz");
   document.getElementById("stats").innerHTML = `<li><b>${BANK.length}</b>문항</li><li><b>${SUBJECTS.length}</b>과목</li><li><b>5</b>지 선다</li><li>정답·해설 제공</li>`;
-  const countBy = (pred) => BANK.filter(pred).length;
-  const p = pool();
+  const cnt = pred => BANK.filter(pred).length;
   const wrong = wrongList();
+  const best = store.get("quiz-bell-best", null);
+  const p = practicePool();
+  const practice = `
+    <div class="group"><div class="lbl">풀이 방식</div><div class="chips">
+      ${chip("data-pace", "one", state.pace === "one", "한 문제씩 풀기")}${chip("data-pace", "ten", state.pace === "ten", "10문제씩 풀기")}
+    </div></div>
+    <div class="group"><div class="lbl">과목 <small>(여러 개 선택 가능)</small></div><div class="chips">
+      ${SUBJECTS.map(s => chip("data-subj", s, state.subjects.has(s), s, cnt(q => q.s === s))).join("")}
+    </div></div>
+    <div class="row3">
+      <div class="group"><div class="lbl">난이도</div><div class="chips">${["하", "중", "상"].map(d => chip("data-level", d, state.levels.has(d), d)).join("")}</div></div>
+      <div class="group"><div class="lbl">학년</div><div class="chips">${[1, 2, 3].map(g => chip("data-grade", g, state.grades.has(g), "고" + g)).join("")}</div></div>
+      <div class="group"><div class="lbl">유형</div><div class="chips">${Object.entries(TYPES).map(([k, v]) => chip("data-type", k, state.types.has(k), v)).join("")}</div></div>
+    </div>
+    <div class="startbar">
+      <div class="count">조건에 맞는 문항 <b>${p.length}</b>개 · ${state.pace === "one" ? "한 문제씩 원하는 만큼" : `<b>${Math.min(10, p.length)}</b>문제 한 세트`}</div>
+      <button class="btn" id="start" ${p.length ? "" : "disabled"}>연습 시작</button>
+    </div>
+    ${p.length ? "" : `<p class="bon-note" style="margin:0">선택한 조건에 맞는 문항이 없습니다. 과목·학년·난이도 선택을 넓혀 보세요.</p>`}`;
+  const bp = bellPool();
+  const bell = `
+    <p class="bell-rule">6과목에서 고르게 섞인 <b>${BELL_SIZE}문제</b>가 무작위로 나옵니다. 한 문제씩 풀면서 바로 정답을 확인하고, 마지막에 맞힌 개수와 걸린 시간이 기록됩니다.</p>
+    <div class="group"><div class="lbl">출제 학년</div><div class="chips">${[1, 2, 3].map(g => chip("data-bgrade", g, state.bellGrades.has(g), "고" + g)).join("")}</div></div>
+    <div class="startbar">
+      <div class="best">${best ? `최고 기록 <b>${best.right} / ${best.n}</b> · ${fmt(best.ms)} · ${best.date}` : "아직 기록이 없습니다. 첫 기록에 도전하세요."}</div>
+      <button class="btn" id="start" ${bp.length ? "" : "disabled"}>골든벨 도전</button>
+    </div>`;
   app.innerHTML = "";
   app.append(el(`
   <section class="stack" style="padding-top:18px">
-   <div class="panel">
-    <div class="group">
-      <div class="lbl">1. 문제 유형</div>
-      <div class="types">
-        ${Object.entries(TYPES).map(([k, v]) => `
-          <button class="type-card" data-type="${k}" aria-pressed="${state.type === k}">
-            <strong>${v.name}</strong><span>${v.desc}</span>
-            <span class="n">${countBy(q => q.t === k)}문항</span>
-          </button>`).join("")}
-      </div>
+    <div class="modes">
+      <button class="mode-card" data-mode="practice" aria-pressed="${state.mode === "practice"}"><strong>연습 모드</strong><span>과목·난이도를 골라 한 문제씩 또는 10문제씩</span></button>
+      <button class="mode-card" data-mode="bell" aria-pressed="${state.mode === "bell"}"><strong>골든벨 모드</strong><span>무작위 ${BELL_SIZE}문제, 몇 개까지 맞힐 수 있을까?</span></button>
     </div>
-    <div class="group">
-      <div class="lbl">2. 과목 <small>(여러 개 선택 가능)</small></div>
-      <div class="chips">
-        ${SUBJECTS.map(s => `<button class="chip" data-subj="${s}" aria-pressed="${state.subjects.has(s)}">${s}<small>${countBy(q => q.s === s && q.t === state.type)}</small></button>`).join("")}
-      </div>
-    </div>
-    <div class="row3">
-      <div class="group">
-        <div class="lbl">3. 학년</div>
-        <div class="chips">${[1, 2, 3].map(g => `<button class="chip" data-grade="${g}" aria-pressed="${state.grades.has(g)}">고${g}</button>`).join("")}</div>
-      </div>
-      <div class="group">
-        <div class="lbl">4. 난이도</div>
-        <div class="chips">${["하", "중", "상"].map(d => `<button class="chip" data-level="${d}" aria-pressed="${state.levels.has(d)}">${d}</button>`).join("")}</div>
-      </div>
-      <div class="group">
-        <div class="lbl">5. 문항 수</div>
-        <div class="chips">${[5, 10, 20, 0].map(n => `<button class="chip" data-size="${n}" aria-pressed="${state.size === n}">${n || "전체"}</button>`).join("")}</div>
-      </div>
-    </div>
-    <div class="startbar">
-      <div class="count">조건에 맞는 문항 <b>${p.length}</b>개 중 <b>${state.size ? Math.min(state.size, p.length) : p.length}</b>문항 출제</div>
-      <button class="btn" id="start" ${p.length ? "" : "disabled"}>풀기 시작</button>
-    </div>
-    ${p.length ? "" : `<p class="bon-note" style="margin:0">선택한 조건에 맞는 문항이 없습니다. 과목·학년·난이도 선택을 넓혀 보세요.</p>`}
-   </div>
+    <div class="panel">${state.mode === "bell" ? bell : practice}</div>
     ${wrong.length ? `<div class="panel"><div class="startbar" style="border:0;padding:0"><div class="count"><b>오답 노트</b> 틀린 문제 ${wrong.length}개가 모여 있습니다.</div>
       <div class="actions"><button class="btn ghost" id="clear-wrong">비우기</button><button class="btn ghost" id="retry-wrong">오답만 다시 풀기</button></div></div></div>` : ""}
     <p class="bon-note" style="margin:0"><b>키보드로 풀기</b> 숫자 키 1~5로 답을 고르고 Enter로 채점하거나 다음 문제로 넘어갈 수 있습니다.</p>
   </section>`));
 
-  app.querySelectorAll("[data-type]").forEach(b => b.onclick = () => { state.type = b.dataset.type; saveFilters(); renderHome(); });
-  const toggle = (set, v) => { set.has(v) ? set.delete(v) : set.add(v); saveFilters(); renderHome(); };
+  const re = () => { saveFilters(); renderHome(); };
+  const toggle = (set, v) => { if (set.has(v) && set.size === 1) return; set.has(v) ? set.delete(v) : set.add(v); re(); };
+  app.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => { state.mode = b.dataset.mode; re(); });
+  app.querySelectorAll("[data-pace]").forEach(b => b.onclick = () => { state.pace = b.dataset.pace; re(); });
+  app.querySelectorAll("[data-type]").forEach(b => b.onclick = () => toggle(state.types, b.dataset.type));
   app.querySelectorAll("[data-subj]").forEach(b => b.onclick = () => toggle(state.subjects, b.dataset.subj));
   app.querySelectorAll("[data-grade]").forEach(b => b.onclick = () => toggle(state.grades, +b.dataset.grade));
   app.querySelectorAll("[data-level]").forEach(b => b.onclick = () => toggle(state.levels, b.dataset.level));
-  app.querySelectorAll("[data-size]").forEach(b => b.onclick = () => { state.size = +b.dataset.size; saveFilters(); renderHome(); });
+  app.querySelectorAll("[data-bgrade]").forEach(b => b.onclick = () => toggle(state.bellGrades, +b.dataset.bgrade));
   document.getElementById("start").onclick = () => {
-    const picked = shuffle(pool());
-    startQuiz(state.size ? picked.slice(0, state.size) : picked, TYPES[state.type].name);
+    if (state.mode === "bell") startQuiz(bellPick(), { mode: "bell", label: "골든벨" });
+    else if (state.pace === "one") startQuiz(shuffle(p), { mode: "one", label: "연습 · 한 문제씩" });
+    else startQuiz(shuffle(p).slice(0, 10), { mode: "ten", label: "연습 · 10문제" });
   };
   const rw = document.getElementById("retry-wrong");
-  if (rw) rw.onclick = () => startQuiz(shuffle(BANK.filter(q => wrong.includes(q.id))), "오답 노트");
+  if (rw) rw.onclick = () => startQuiz(shuffle(BANK.filter(q => wrong.includes(q.id))), { mode: "ten", label: "오답 노트" });
   const cw = document.getElementById("clear-wrong");
   if (cw) cw.onclick = () => { store.set("quiz-wrong", []); renderHome(); };
 }
 
+/* ---------- 시간 ---------- */
+let tick = null;
+function stopClock() { if (tick) clearInterval(tick); tick = null; }
+function qElapsed() { return quiz.qDone !== null ? quiz.qDone : Date.now() - quiz.qStart; }
+function drawClock() {
+  if (!quiz) return;
+  const c = document.getElementById("t-cur"), t = document.getElementById("t-total");
+  if (c) c.textContent = fmt(qElapsed());
+  if (t) t.textContent = fmt(Date.now() - quiz.t0);
+}
+
 /* ---------- 문제 화면 ---------- */
-function startQuiz(list, label) {
-  quiz = { list, label, i: 0, picked: null, graded: false, answers: [] };
+function startQuiz(list, opt) {
+  quiz = { list, ...opt, i: 0, picked: null, graded: false, answers: [], t0: Date.now() };
+  stopClock(); tick = setInterval(drawClock, 250);
   renderQuestion();
   window.scrollTo(0, 0);
 }
@@ -261,40 +326,47 @@ function renderQuestion() {
   document.body.classList.add("in-quiz");
   const q = quiz.list[quiz.i];
   const n = quiz.list.length;
+  const right = quiz.answers.filter(x => x.ok).length;
+  const endless = quiz.mode === "one";
+  quiz.qStart = Date.now(); quiz.qDone = null;
   app.innerHTML = "";
   app.append(el(`
   <section class="stack">
-    <div class="qhead">
+    <div class="timebar" role="timer" aria-live="off">
+      <span class="mode">${quiz.label}</span>
+      <span class="t"><span class="cur">이 문제<b id="t-cur">0:00</b></span><span>총<b id="t-total">${fmt(Date.now() - quiz.t0)}</b></span></span>
+    </div>
+    <div class="qhead" style="padding-top:0">
       <div class="tags">
-        <span class="bon-tag">${q.s}</span><span class="bon-tag is-plain">${quiz.label}</span><span class="bon-tag is-plain">고${q.g}</span>
+        <span class="bon-tag">${q.s}</span><span class="bon-tag is-plain">${TYPES[q.t]}</span><span class="bon-tag is-plain">고${q.g}</span>
         <span class="bon-tag lv-${q.d}">난이도 ${q.d}</span>
       </div>
-      <span class="progress">${quiz.i + 1} / ${n}</span>
+      <span class="progress">${endless ? `${quiz.i + 1}번째 문제 · 맞힘 ${right}` : `${quiz.i + 1} / ${n} · 맞힘 ${right}`}</span>
     </div>
-    <div class="meter"><i style="width:${(quiz.i / n) * 100}%"></i></div>
-    <article class="panel">
+    ${endless ? "" : `<div class="meter"><i style="width:${(quiz.i / n) * 100}%"></i></div>`}
+    <article class="panel qcard">
+      <details class="flag" id="flag">
+        <summary>이 문제 이상해요</summary>
+        <form class="report" id="report" data-endpoint="__FEEDBACK_ENDPOINT__" novalidate>
+          <p>어떤 점이 이상한지 골라 주세요. 선생님이 확인하고 고칠게요. 이름·전화번호 같은 개인정보는 적지 마세요.</p>
+          <div class="chips">${REPORT_REASONS.map((r, k) => `<button type="button" class="chip" data-reason="${r}" aria-pressed="${k === 0}">${r}</button>`).join("")}</div>
+          <textarea id="report-msg" name="msg" maxlength="500" placeholder="자세한 내용 (적지 않아도 돼요)" aria-label="자세한 내용"></textarea>
+          <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <p class="status" id="report-status" role="status" aria-live="polite"></p>
+          <div class="actions">
+            <button type="button" class="btn ghost" id="report-copy">내용 복사</button>
+            <button type="submit" class="btn" id="report-send">제보 보내기</button>
+          </div>
+        </form>
+      </details>
       ${q.p ? `<div class="passage">${q.p}</div>` : ""}
       <div class="qtext"><span class="num">${quiz.i + 1}.</span>${q.q}</div>
       <div class="choices" role="radiogroup" aria-label="선택지">
         ${q.c.map((c, k) => `<button class="choice" role="radio" aria-checked="false" data-k="${k + 1}"><span class="bub">${k + 1}</span><span class="txt">${c}</span></button>`).join("")}
       </div>
       <div id="explain"></div>
-      <form class="report" id="report" data-endpoint="__FEEDBACK_ENDPOINT__" hidden novalidate>
-        <strong>이 문제 이상해요</strong>
-        <p>어떤 점이 이상한지 골라 주세요. 선생님이 확인하고 고칠게요. 이름·전화번호 같은 개인정보는 적지 마세요.</p>
-        <div class="chips">${REPORT_REASONS.map((r, k) => `<button type="button" class="chip" data-reason="${r}" aria-pressed="${k === 0}">${r}</button>`).join("")}</div>
-        <textarea id="report-msg" name="msg" maxlength="500" placeholder="자세한 내용 (적지 않아도 돼요)" aria-label="자세한 내용"></textarea>
-        <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
-        <p class="status" id="report-status" role="status" aria-live="polite"></p>
-        <div class="actions">
-          <button type="button" class="btn ghost" id="report-copy">내용 복사</button>
-          <button type="button" class="btn ghost" id="report-close">닫기</button>
-          <button type="submit" class="btn" id="report-send">제보 보내기</button>
-        </div>
-      </form>
       <div class="actions">
-        <button type="button" class="report-open" id="report-open">이 문제 이상해요</button>
-        <button class="btn ghost" id="quit">그만 풀기</button>
+        <button class="btn ghost" id="quit">${endless ? "그만하고 결과 보기" : "그만 풀기"}</button>
         <button class="btn" id="go" disabled>채점하기</button>
       </div>
     </article>
@@ -304,23 +376,17 @@ function renderQuestion() {
   document.getElementById("go").onclick = advance;
   document.getElementById("quit").onclick = () => quiz.answers.length ? renderResult() : renderHome();
   setupReport(q);
+  drawClock();
 }
 
 /* ---------- '이 문제 이상해요' 제보 ---------- */
 function setupReport(q) {
-  const form = document.getElementById("report"), status = document.getElementById("report-status");
+  const flag = document.getElementById("flag"), form = document.getElementById("report"), status = document.getElementById("report-status");
   const send = document.getElementById("report-send"), msg = document.getElementById("report-msg");
   const say = (t, err) => { status.textContent = t; status.classList.toggle("err", !!err); };
   let reason = REPORT_REASONS[0];
-  const text = () => `[문제 제보] ${q.id} (${q.s} · ${TYPES[q.t].name} · 고${q.g} · 난이도 ${q.d})\n사유: ${reason}\n내용: ${msg.value.trim() || "(없음)"}`;
-  document.getElementById("report-open").onclick = () => {
-    form.hidden = !form.hidden;
-    if (!form.hidden) {
-      if (!form.dataset.endpoint) say("아직 제보 받는 곳을 준비하고 있어요. '내용 복사'를 눌러 선생님께 전해 주세요.", true);
-      form.scrollIntoView({ block: "nearest" });
-    }
-  };
-  document.getElementById("report-close").onclick = () => { form.hidden = true; };
+  const text = () => `[문제 제보] ${q.id} (${q.s} · ${TYPES[q.t]} · 고${q.g} · 난이도 ${q.d})\n사유: ${reason}\n내용: ${msg.value.trim() || "(없음)"}`;
+  flag.addEventListener("toggle", () => { if (flag.open && !form.dataset.endpoint) say("아직 제보 받는 곳을 준비하고 있어요. '내용 복사'를 눌러 선생님께 전해 주세요.", true); });
   form.querySelectorAll("[data-reason]").forEach(b => b.onclick = () => {
     reason = b.dataset.reason;
     form.querySelectorAll("[data-reason]").forEach(x => x.setAttribute("aria-pressed", x === b));
@@ -338,7 +404,7 @@ function setupReport(q) {
     try {
       // 구글 Apps Script 웹 앱은 응답을 읽을 수 없게(no-cors) 보내는 것이 가장 확실하다
       await fetch(url, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ id: q.id, subject: q.s, type: TYPES[q.t].name, grade: "고" + q.g, level: q.d, reason, msg: msg.value.trim(),
+        body: JSON.stringify({ id: q.id, subject: q.s, type: TYPES[q.t], grade: "고" + q.g, level: q.d, reason, msg: msg.value.trim(),
           question: q.q.replace(/<[^>]+>/g, " ").slice(0, 120), picked: quiz && quiz.picked || "", website: form.website.value }) });
       store.set("quiz-report-at", Date.now());
       msg.value = "";
@@ -363,7 +429,8 @@ function advance() {
     const q = quiz.list[quiz.i];
     const ok = quiz.picked === q.a;
     quiz.graded = true;
-    quiz.answers.push({ q, picked: quiz.picked, ok });
+    quiz.qDone = Date.now() - quiz.qStart;
+    quiz.answers.push({ q, picked: quiz.picked, ok, ms: quiz.qDone });
     let wrong = wrongList();
     wrong = ok ? wrong.filter(id => id !== q.id) : [...new Set([...wrong, q.id])];
     store.set("quiz-wrong", wrong);
@@ -373,12 +440,17 @@ function advance() {
       else if (k === quiz.picked) b.classList.add("wrong");
     });
     document.getElementById("explain").innerHTML = `<div class="explain">
-      <div class="verdict ${ok ? "ok" : "bad"}">${ok ? "정답입니다" : `오답입니다 · 정답 ${NUMS[q.a - 1]}`}</div>
+      <div class="verdict ${ok ? "ok" : "bad"}">${ok ? "정답입니다" : `오답입니다 · 정답 ${NUMS[q.a - 1]}`} <span class="ptime">· ${fmt(quiz.qDone)}</span></div>
       <p>${q.e}</p></div>`;
+    drawClock();
     const go = document.getElementById("go");
-    go.textContent = quiz.i + 1 < quiz.list.length ? "다음 문제" : "결과 보기";
+    const last = quiz.mode !== "one" && quiz.i + 1 >= quiz.list.length;
+    go.textContent = last ? "결과 보기" : "다음 문제";
     go.focus();
   } else if (quiz.i + 1 < quiz.list.length) {
+    quiz.i++; renderQuestion(); window.scrollTo(0, 0);
+  } else if (quiz.mode === "one") {
+    quiz.list = quiz.list.concat(shuffle(quiz.list));   // 다 풀면 다시 섞어서 계속
     quiz.i++; renderQuestion(); window.scrollTo(0, 0);
   } else {
     renderResult();
@@ -387,24 +459,40 @@ function advance() {
 
 /* ---------- 결과 화면 ---------- */
 function renderResult() {
+  stopClock();
   const a = quiz.answers;
+  const total = Date.now() - quiz.t0;
   const right = a.filter(x => x.ok).length;
   const pct = a.length ? Math.round(right / a.length * 100) : 0;
+  const avg = a.length ? a.reduce((s, x) => s + x.ms, 0) / a.length : 0;
   const bySubj = SUBJECTS.map(s => { const r = a.filter(x => x.q.s === s); return { s, n: r.length, ok: r.filter(x => x.ok).length }; }).filter(x => x.n);
   const wrong = a.filter(x => !x.ok);
+  let record = "";
+  if (quiz.mode === "bell" && a.length === quiz.list.length) {
+    const best = store.get("quiz-bell-best", null);
+    if (!best || right > best.right || (right === best.right && total < best.ms)) {
+      const d = new Date();
+      store.set("quiz-bell-best", { right, n: a.length, ms: total, date: `${d.getMonth() + 1}월 ${d.getDate()}일` });
+      record = `<p class="bon-note" style="margin:0"><b>최고 기록!</b> 이 기기에서 세운 골든벨 최고 기록입니다.</p>`;
+    }
+    if (right === a.length) record = `<p class="bon-note" style="margin:0"><b>골든벨을 울렸습니다!</b> ${a.length}문제를 모두 맞혔어요.</p>`;
+  }
   app.innerHTML = "";
   app.append(el(`
   <section class="stack">
     <div class="score"><span class="big">${right} / ${a.length}</span><span class="sub">정답률 ${pct}% · ${quiz.label}</span></div>
+    <ul class="stats" style="margin:0"><li>총 소요 시간<b style="margin-left:6px">${fmt(total)}</b></li><li>문제당 평균<b style="margin-left:6px">${fmt(avg)}</b></li></ul>
+    ${record}
     <div class="panel"><div class="lbl">과목별 결과</div>
       <div class="group">${bySubj.map(b => `<div class="brow"><span>${b.s}</span><div class="track"><i style="width:${b.ok / b.n * 100}%"></i></div><span>${b.ok}/${b.n}</span></div>`).join("")}</div>
     </div>
     ${wrong.length ? `<div class="group"><div class="lbl">틀린 문제 해설 (${wrong.length})</div><div class="review">
-      ${wrong.map(x => `<details><summary>[${x.q.s} · 고${x.q.g} · ${x.q.d}] ${x.q.q.split("\n")[0]}</summary>
+      ${wrong.map(x => `<details><summary>[${x.q.s} · 고${x.q.g} · ${x.q.d}] ${x.q.q.split("<")[0].split("\n")[0]} <span class="ptime">${fmt(x.ms)}</span></summary>
         ${x.q.p ? `<div class="passage">${x.q.p}</div>` : ""}
+        <div class="qtext" style="margin-top:10px;font-size:1rem">${x.q.q}</div>
         <p class="ans">내 답 ${NUMS[x.picked - 1]} ${x.q.c[x.picked - 1]} → 정답 ${NUMS[x.q.a - 1]} ${x.q.c[x.q.a - 1]}</p>
         <p>${x.q.e}</p></details>`).join("")}
-    </div></div>` : `<p class="bon-note" style="margin:0"><b>모두 맞혔습니다.</b> 난이도를 올리거나 다른 과목에 도전해 보세요.</p>`}
+    </div></div>` : `<p class="bon-note" style="margin:0"><b>모두 맞혔습니다.</b> 난이도를 올리거나 골든벨에 도전해 보세요.</p>`}
     <div class="actions">
       ${wrong.length ? `<button class="btn ghost" id="again-wrong">틀린 문제 다시 풀기</button>` : ""}
       <button class="btn" id="home">처음으로</button>
@@ -412,13 +500,14 @@ function renderResult() {
   </section>`));
   document.getElementById("home").onclick = () => { renderHome(); window.scrollTo(0, 0); };
   const ag = document.getElementById("again-wrong");
-  if (ag) ag.onclick = () => startQuiz(shuffle(wrong.map(x => x.q)), "다시 풀기");
+  if (ag) ag.onclick = () => startQuiz(shuffle(wrong.map(x => x.q)), { mode: "ten", label: "다시 풀기" });
   quiz = null;
+  window.scrollTo(0, 0);
 }
 
 document.addEventListener("keydown", e => {
   if (!quiz || e.altKey || e.ctrlKey || e.metaKey) return;
-  if (e.target.closest && e.target.closest("#report")) return;  // 제보 내용을 쓰는 중에는 단축키를 끈다
+  if (e.target.closest && e.target.closest("#report")) return;  // 제보를 쓰는 중에는 단축키를 끈다
   if (e.key >= "1" && e.key <= "5") pick(+e.key);
   else if (e.key === "Enter" && document.activeElement?.id !== "quit") { e.preventDefault(); advance(); }
 });

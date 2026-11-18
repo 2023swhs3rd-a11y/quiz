@@ -18,7 +18,7 @@ SITE_PATH = "/quiz/"
 # 비워 두면 학생 화면에 "준비하고 있어요"가 뜨고 '내용 복사'만 된다.
 FEEDBACK_ENDPOINT = ""
 
-MODULES = ["q_korean", "q_korean2", "q_korean3", "q_english", "q_english2", "q_english3", "q_math", "q_math2", "q_math3", "q_history", "q_history2", "q_history3", "q_society", "q_society2", "q_society3", "q_science", "q_science2", "q_science3"]
+MODULES = ["q_korean", "q_korean2", "q_korean3", "q_korean4", "q_korean5", "q_english", "q_english2", "q_english3", "q_english4", "q_english5", "q_math", "q_math2", "q_math3", "q_math4", "q_history", "q_history2", "q_history3", "q_history4", "q_society", "q_society2", "q_society3", "q_society4", "q_science", "q_science2", "q_science3", "q_science4"]
 
 
 def load():
@@ -39,11 +39,21 @@ def load():
             if not q["e"].strip(): errors.append(f"{where}: 해설 없음")
             code = {"국어": "KO", "영어": "EN", "수학": "MA", "한국사": "HI", "통합사회": "SO", "통합과학": "SC"}[mod.S]
             bank.append({"id": f"{code}-{i:03d}", "s": mod.S, **q})
+    # 한 지문에는 질문 하나만: 같은 지문을 두 문항 이상에서 쓰지 않는다
+    first = {}
+    for q in bank:
+        key = re.sub(r"\s+", "", q.get("p", ""))
+        if not key:
+            continue
+        if key in first:
+            errors.append(f"{q['id']}: {first[key]} 과 같은 지문을 다시 썼습니다(한 지문에는 질문 하나만)")
+        else:
+            first[key] = q["id"]
     return bank, errors
 
 
 CIRCLED = "①②③④⑤"
-ORDERED = re.compile(r"^\s*(\(가\)|\(나\)|ㄱ|ㄴ|ㄷ|[①②③④⑤])")
+ORDERED = re.compile(r"^\s*(\(가\)|\(나\)|\(A\)|ㄱ|ㄴ|ㄷ|[①②③④⑤㉠㉡㉢㉣㉤ⓐⓑⓒⓓⓔ])")
 
 
 def as_int(c):
@@ -66,7 +76,7 @@ def rebalance(bank):
     movable = []
     for q in bank:
         nums = [as_int(c) for c in q["c"]]
-        fixed_text = any(ORDERED.match(c) for c in q["c"]) or any(ch in q["e"] for ch in CIRCLED)
+        fixed_text = any(ORDERED.match(c) and " - (B)" not in c for c in q["c"]) or any(ch in q["e"] for ch in CIRCLED)
         leads = [lead_num(c) for c in q["c"]]
         if all(n is None for n in nums) or not all(n is not None for n in nums):
             # 단위가 붙은 수(20 m/s, 1592년 등)가 작은 것부터 나열된 선택지는 순서를 유지한다.
@@ -151,7 +161,7 @@ def main():
 
     # 3) 진로진학부 사이트 배포용(저장소 맨 위, GitHub Pages가 그대로 내보낸다): 원본 /assets/site.css 를 불러오고 웹앱 설정을 붙인다
     url = SITE_ORIGIN + SITE_PATH
-    desc = f"국어·영어·수학·한국사·통합사회·통합과학 {len(bank)}문항을 단편지식형과 수능형으로 나누어 풀고 정답과 해설을 확인하는 봉일천고 진로진학부 문제은행입니다."
+    desc = f"국어·영어·수학·한국사·통합사회·통합과학 {len(bank)}문항으로 연습하고, 무작위 50문제 골든벨에 도전하는 봉일천고 진로진학부 퀴즈입니다."
     head = f"""<meta name="description" content="{desc}">
 <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
 <link rel="icon" href="/favicon-32.png?v=2" sizes="32x32" type="image/png">
@@ -160,7 +170,7 @@ def main():
 <meta name="theme-color" content="#a16207">
 <link rel="canonical" href="{url}">
 <meta property="og:type" content="website">
-<meta property="og:title" content="봉일천고 주요과목 문제은행">
+<meta property="og:title" content="봉일천고 골든벨">
 <meta property="og:description" content="{desc}">
 <meta property="og:url" content="{url}">
 <meta property="og:site_name" content="봉일천고 진로진학부">
@@ -172,7 +182,7 @@ if ("serviceWorker" in navigator) window.addEventListener("load", () => navigato
     (dep / "index.html").write_text(page('<link rel="stylesheet" href="/assets/site.css?v=1">', head, sw, endpoint=FEEDBACK_ENDPOINT), encoding="utf-8")
     (dep / ".nojekyll").write_text("")
     (dep / "manifest.webmanifest").write_text(json.dumps({
-        "name": "봉일천고 주요과목 문제은행", "short_name": "문제은행", "description": desc, "lang": "ko",
+        "name": "봉일천고 골든벨", "short_name": "골든벨", "description": desc, "lang": "ko",
         "start_url": "./", "scope": "./", "display": "standalone",
         "background_color": "#f4f5f7", "theme_color": "#a16207",
         "icons": [{"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
